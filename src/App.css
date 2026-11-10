@@ -56,7 +56,7 @@ button {
   align-items: center;
   justify-content: space-between;
   gap: 20px;
-  margin-bottom: 32px;
+  margin-bottom: 28px;
 }
 
 .brand {
@@ -96,24 +96,18 @@ button {
   justify-content: flex-end;
 }
 
-.edition-badge {
-  padding: 9px 12px;
+.edition-badge,
+.theme-toggle {
+  padding: 9px 13px;
   border-radius: 30px;
   background: var(--card-bg);
   color: var(--text);
+  border: 1px solid var(--border);
   font-size: 12px;
   font-weight: 700;
-  border: 1px solid var(--border);
 }
 
 .theme-toggle {
-  padding: 9px 13px;
-  border: 1px solid var(--border);
-  border-radius: 30px;
-  background: var(--card-bg);
-  color: var(--text);
-  font-size: 12px;
-  font-weight: 700;
   cursor: pointer;
   transition: 0.2s;
 }
@@ -121,6 +115,93 @@ button {
 .theme-toggle:hover {
   transform: translateY(-2px);
   border-color: var(--primary);
+}
+
+.level-banner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 15px;
+  padding: 21px 25px;
+  margin-bottom: 15px;
+  border-radius: 16px;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
+}
+
+.level-label {
+  color: var(--primary);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 1.3px;
+}
+
+.level-banner h2 {
+  font-size: 22px;
+  margin: 6px 0;
+}
+
+.level-banner p {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.level-count {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 12px 17px;
+  border-radius: 12px;
+  background: var(--soft-bg);
+}
+
+.level-count strong {
+  font-size: 22px;
+  color: var(--primary);
+}
+
+.level-count span {
+  font-size: 10px;
+  color: var(--muted);
+}
+
+.overall-progress {
+  padding: 16px 20px;
+  margin-bottom: 18px;
+  border-radius: 13px;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+}
+
+.overall-progress-label {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 10px;
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.overall-progress-label strong {
+  color: var(--text);
+}
+
+.progress-track,
+.question-progress-track {
+  width: 100%;
+  height: 9px;
+  overflow: hidden;
+  background: var(--border);
+  border-radius: 20px;
+}
+
+.overall-progress-fill {
+  height: 100%;
+  border-radius: 20px;
+  background: linear-gradient(90deg, #4e8df0, #6d6ae9);
+  transition: width 0.4s ease;
 }
 
 .game-card {
@@ -207,15 +288,6 @@ button {
 
 .timer-information strong.time-warning {
   color: #e58b36;
-}
-
-.progress-track,
-.question-progress-track {
-  height: 10px;
-  width: 100%;
-  overflow: hidden;
-  background: var(--border);
-  border-radius: 20px;
 }
 
 .progress-fill {
@@ -321,7 +393,7 @@ button {
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  margin-bottom: 15px;
+  margin-bottom: 20px;
 }
 
 .quiz-progress-heading h2 {
@@ -332,19 +404,6 @@ button {
   color: var(--muted);
   font-size: 12px;
   font-weight: 700;
-  white-space: nowrap;
-}
-
-.question-progress-track {
-  height: 7px;
-  margin-bottom: 22px;
-}
-
-.question-progress-fill {
-  height: 100%;
-  border-radius: 20px;
-  background: var(--primary);
-  transition: width 0.3s ease;
 }
 
 .stats-grid {
@@ -492,6 +551,15 @@ button {
   border-color: rgba(228, 91, 91, 0.35);
 }
 
+.retry-button {
+  margin-top: 18px;
+  background: #dc8735;
+}
+
+.retry-button:hover {
+  background: #c87325;
+}
+
 .next-button {
   margin-top: 18px;
 }
@@ -562,6 +630,34 @@ button {
   font-size: 22px;
 }
 
+.level-results {
+  margin-bottom: 24px;
+  padding: 18px;
+  border-radius: 13px;
+  background: var(--soft-bg);
+  border: 1px solid var(--border);
+  text-align: left;
+}
+
+.level-results h3 {
+  font-size: 14px;
+  margin-bottom: 13px;
+}
+
+.level-result-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 11px 0;
+  border-top: 1px solid var(--border);
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.level-result-row strong {
+  color: #24a36a;
+}
+
 .footer {
   padding: 25px 10px 5px;
   text-align: center;
@@ -586,11 +682,15 @@ button {
   .header {
     align-items: flex-start;
     flex-direction: column;
-    margin-bottom: 22px;
+    margin-bottom: 20px;
   }
 
   .header-actions {
     justify-content: flex-start;
+  }
+
+  .level-banner {
+    padding: 17px;
   }
 
   .game-card {
@@ -655,5 +755,9 @@ button {
 
   .result-stat strong {
     font-size: 19px;
+  }
+
+  .overall-progress-label {
+    font-size: 10px;
   }
 }
