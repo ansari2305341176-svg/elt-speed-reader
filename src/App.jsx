@@ -2,94 +2,94 @@
 import { useState, useEffect } from "react";
 import "./App.css";
 
-const passage = `Education plays an important role in the development of Bangladesh. Over the past decade, the country has experienced significant changes in its educational system. Digital technology has created new opportunities for students and teachers. Online learning platforms allow students to access educational resources from almost anywhere.
+// SHORT READING PASSAGE
+const passage = `Bangladesh has made significant progress in digital education. Many universities now use online platforms to conduct classes and share learning materials. Students can access digital books, attend virtual lectures and communicate with teachers. However, rural students still face challenges due to limited internet access. Better infrastructure can make education more accessible to everyone.`;
 
-Many universities in Bangladesh are now introducing technology-based learning methods. Students can attend online classes, read digital books and communicate with teachers through various platforms. Artificial Intelligence is also becoming an important tool in modern education.
-
-However, challenges still exist. Many students in rural areas have limited access to reliable internet connections and digital devices. Therefore, improving digital infrastructure is essential to ensure equal educational opportunities.
-
-With proper planning and investment, technology can make education more accessible, effective and inclusive for students across Bangladesh.`;
-
+// QUIZ QUESTIONS
 const questions = [
   {
     type: "Skimming",
     question: "What is the main idea of the passage?",
     options: [
-      "The development of transportation",
-      "The importance of education and technology in Bangladesh",
-      "The history of agriculture",
-      "The tourism industry"
+      "Agricultural development",
+      "Digital education in Bangladesh",
+      "International tourism",
+      "Population growth"
     ],
     answer: 1,
     explanation:
-      "The passage mainly discusses how technology is transforming education in Bangladesh."
+      "The passage focuses on the progress and challenges of digital education in Bangladesh."
   },
   {
     type: "Scanning",
-    question: "Which technology is mentioned in the passage?",
+    question: "What do universities use to conduct classes?",
     options: [
-      "Artificial Intelligence",
-      "Television broadcasting",
-      "Radio communication",
-      "Printing technology"
+      "Online platforms",
+      "Radio stations",
+      "Newspapers",
+      "Printed posters"
     ],
     answer: 0,
     explanation:
-      "The passage specifically mentions Artificial Intelligence as an emerging educational tool."
+      "The passage states that many universities use online platforms to conduct classes."
   },
   {
     type: "Scanning",
-    question: "What can students access through digital platforms?",
+    question: "What can students access digitally?",
     options: [
       "Only newspapers",
-      "Only textbooks",
-      "Educational resources",
-      "Only entertainment"
+      "Only entertainment",
+      "Digital books and virtual lectures",
+      "Only printed materials"
     ],
     answer: 2,
     explanation:
-      "The first paragraph explains that students can access educational resources online."
+      "Students can access digital books and attend virtual lectures."
   },
   {
     type: "Scanning",
-    question: "What is one challenge faced by rural students?",
+    question: "Which students face internet-related challenges?",
     options: [
-      "Too many universities",
-      "Limited internet access and digital devices",
-      "Too many digital books",
-      "Lack of educational subjects"
+      "Urban professionals",
+      "Rural students",
+      "University teachers",
+      "International students"
     ],
     answer: 1,
     explanation:
-      "The third paragraph identifies limited internet connections and digital devices as challenges."
+      "The passage specifically mentions that rural students face limited internet access."
   },
   {
     type: "Skimming",
-    question: "What is the author's overall attitude?",
+    question: "What solution does the passage suggest?",
     options: [
-      "Completely negative",
-      "Optimistic but realistic",
-      "Uninterested",
-      "Against technology"
+      "Reducing university admissions",
+      "Stopping online classes",
+      "Improving infrastructure",
+      "Removing digital books"
     ],
-    answer: 1,
+    answer: 2,
     explanation:
-      "The author recognizes both the benefits of technology and the challenges that still need to be addressed."
+      "Better infrastructure can improve access to education for everyone."
   }
 ];
 
 function App() {
   const [phase, setPhase] = useState("welcome");
+  const [theme, setTheme] = useState("light");
+
   const [time, setTime] = useState(30);
   const [current, setCurrent] = useState(0);
   const [selected, setSelected] = useState(null);
+
   const [score, setScore] = useState(0);
   const [correct, setCorrect] = useState(0);
   const [streak, setStreak] = useState(0);
   const [bestStreak, setBestStreak] = useState(0);
+
   const [answers, setAnswers] = useState([]);
 
-  // 30-second reading countdown
+  // READING TIMER
   useEffect(() => {
     if (phase !== "reading") return;
 
@@ -100,20 +100,20 @@ function App() {
     return () => clearInterval(timer);
   }, [phase]);
 
-  // Automatically move to questions after 30 seconds
+  // AUTOMATIC TRANSITION TO QUIZ
   useEffect(() => {
     if (phase === "reading" && time === 0) {
       setPhase("quiz");
     }
   }, [phase, time]);
 
-  // Start the game
+  // START GAME
   function startGame() {
     setPhase("reading");
     setTime(30);
   }
 
-  // Check the selected answer
+  // ANSWER VALIDATION
   function submitAnswer(index) {
     if (selected !== null) return;
 
@@ -137,6 +137,7 @@ function App() {
       const newStreak = streak + 1;
 
       setStreak(newStreak);
+
       setBestStreak((previous) =>
         Math.max(previous, newStreak)
       );
@@ -145,7 +146,7 @@ function App() {
     }
   }
 
-  // Move to the next question
+  // NEXT QUESTION
   function nextQuestion() {
     if (current < questions.length - 1) {
       setCurrent((previous) => previous + 1);
@@ -155,17 +156,26 @@ function App() {
     }
   }
 
-  // Restart the complete game
+  // RESTART GAME
   function restartGame() {
     setPhase("welcome");
     setTime(30);
     setCurrent(0);
     setSelected(null);
+
     setScore(0);
     setCorrect(0);
     setStreak(0);
     setBestStreak(0);
+
     setAnswers([]);
+  }
+
+  // THEME SWITCH
+  function toggleTheme() {
+    setTheme((previous) =>
+      previous === "light" ? "blue" : "light"
+    );
   }
 
   const question = questions[current];
@@ -175,10 +185,11 @@ function App() {
   );
 
   return (
-    <div className="app">
+    <div className={`app ${theme === "blue" ? "blue-theme" : ""}`}>
 
       {/* NAVBAR */}
       <header className="navbar">
+
         <div className="brand">
           <div className="brand-icon">📖</div>
 
@@ -188,9 +199,22 @@ function App() {
           </div>
         </div>
 
-        <div className="header-badge">
-          🇧🇩 Bangladesh Edition
+        <div className="nav-actions">
+
+          <div className="header-badge">
+            🇧🇩 Bangladesh Edition
+          </div>
+
+          <button
+            className="theme-toggle"
+            onClick={toggleTheme}
+            aria-label="Switch colour theme"
+          >
+            {theme === "light" ? "🔵 Blue Mode" : "☀ White Mode"}
+          </button>
+
         </div>
+
       </header>
 
       <main className="container">
@@ -200,7 +224,6 @@ function App() {
 
           <div className="stat-card">
             <div className="stat-icon purple">⭐</div>
-
             <div>
               <span>Total Score</span>
               <h2>{score}</h2>
@@ -209,7 +232,6 @@ function App() {
 
           <div className="stat-card">
             <div className="stat-icon blue">🎯</div>
-
             <div>
               <span>Difficulty</span>
               <h2>Easy</h2>
@@ -218,7 +240,6 @@ function App() {
 
           <div className="stat-card">
             <div className="stat-icon orange">🔥</div>
-
             <div>
               <span>Streak</span>
               <h2>{streak}</h2>
@@ -279,7 +300,6 @@ function App() {
                 time <= 10 ? "urgent" : ""
               }`}>
                 <span>TIME LEFT</span>
-
                 <strong>
                   00:{String(time).padStart(2, "0")}
                 </strong>
@@ -297,28 +317,28 @@ function App() {
             </div>
 
             <div className="reading-instruction">
-              💡 Read the passage carefully. Questions will
-              appear automatically after 30 seconds.
+              💡 Read the short passage carefully.
+              Questions will appear automatically after 30 seconds.
             </div>
 
             <div className="passage-box">
 
-              <h3>
-                Education and Digital Transformation in Bangladesh
-              </h3>
+              <div className="passage-heading">
+                <h3>Digital Education in Bangladesh</h3>
+                <span>📖 Short Passage</span>
+              </div>
 
               <p>{passage}</p>
+
+              <div className="word-count">
+                Approximately 50 words per minute challenge
+              </div>
 
             </div>
 
             <div className="reading-footer">
-              <span>
-                🔒 Questions are locked during reading
-              </span>
-
-              <span>
-                {time} seconds remaining
-              </span>
+              <span>🔒 Questions are locked during reading</span>
+              <span>{time} seconds remaining</span>
             </div>
 
           </section>
@@ -381,9 +401,7 @@ function App() {
 
                   if (selected !== null && isCorrect) {
                     optionClass += " correct";
-                  } else if (
-                    isSelected && !isCorrect
-                  ) {
+                  } else if (isSelected && !isCorrect) {
                     optionClass += " wrong";
                   }
 
@@ -417,13 +435,11 @@ function App() {
 
               {/* INSTANT FEEDBACK */}
               {selected !== null && (
-                <div
-                  className={`feedback ${
-                    selected === question.answer
-                      ? "success"
-                      : "error"
-                  }`}
-                >
+                <div className={`feedback ${
+                  selected === question.answer
+                    ? "success"
+                    : "error"
+                }`}>
 
                   <h3>
                     {selected === question.answer
@@ -498,11 +514,8 @@ function App() {
             </p>
 
             <div className="score-circle">
-
               <strong>{score}</strong>
-
               <span>OUT OF 50</span>
-
             </div>
 
             <div className="result-stats">
@@ -535,22 +548,17 @@ function App() {
                 );
 
                 return (
-                  <div
-                    className="review-row"
-                    key={index}
-                  >
+                  <div className="review-row" key={index}>
 
                     <span>
                       Q{index + 1}. {q.type}
                     </span>
 
-                    <strong
-                      className={
-                        result?.correct
-                          ? "green-text"
-                          : "red-text"
-                      }
-                    >
+                    <strong className={
+                      result?.correct
+                        ? "green-text"
+                        : "red-text"
+                    }>
                       {result?.correct
                         ? "✓ Correct"
                         : "✕ Incorrect"}
@@ -577,14 +585,10 @@ function App() {
       {/* FOOTER */}
       <footer>
         <strong>ELT Speed Reader</strong>
-
         <p>
           Interactive English Learning Toolkit | Bangladesh Edition
         </p>
-
-        <span>
-          © 2026 All Rights Reserved
-        </span>
+        <span>© 2026 All Rights Reserved</span>
       </footer>
 
     </div>
