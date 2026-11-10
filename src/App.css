@@ -1,0 +1,275 @@
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  background: #f4f5fb;
+  color: #252744;
+}
+
+.app {
+  min-height: 100vh;
+}
+
+.navbar {
+  background: white;
+  padding: 20px 8%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+}
+
+.navbar h2 {
+  color: #635bdb;
+  font-size: 22px;
+}
+
+.navbar span {
+  color: #777;
+  font-size: 14px;
+}
+
+.container {
+  max-width: 850px;
+  margin: 35px auto;
+  padding: 0 20px;
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 15px;
+  margin-bottom: 25px;
+}
+
+.stat-card {
+  background: white;
+  padding: 18px;
+  border-radius: 12px;
+  text-align: center;
+  box-shadow: 0 3px 12px rgba(0,0,0,0.04);
+}
+
+.stat-card span {
+  color: #777;
+  font-size: 14px;
+}
+
+.stat-card h2 {
+  color: #635bdb;
+  margin-top: 8px;
+}
+
+.card {
+  background: white;
+  padding: 25px;
+  border-radius: 14px;
+  margin-bottom: 20px;
+  box-shadow: 0 3px 15px rgba(0,0,0,0.05);
+}
+
+.welcome, .result {
+  text-align: center;
+  padding: 45px 25px;
+}
+
+.welcome h1, .result h1 {
+  margin-bottom: 15px;
+}
+
+.welcome p, .result p {
+  color: #777;
+  line-height: 1.7;
+  margin-bottom: 22px;
+}
+
+button {
+  background: #635bdb;
+  color: white;
+  border: none;
+  padding: 13px 24px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 15px;
+  font-weight: bold;
+}
+
+button:hover {
+  background: #5148c4;
+}
+
+.progress {
+  height: 8px;
+  background: #ddd;
+  border-radius: 20px;
+  overflow: hidden;
+  margin-bottom: 12px;
+}
+
+.progress div {
+  height: 100%;
+  background: #635bdb;
+  transition: width 0.3s;
+}
+
+.question-count {
+  text-align: right;
+  color: #777;
+  font-size: 13px;
+  margin-bottom: 15px;
+}
+
+.passage h2 {
+  margin-bottom: 18px;
+  color: #635bdb;
+}
+
+.passage p {
+  line-height: 1.9;
+  color: #555;
+  white-space: pre-line;
+  font-size: 15px;
+}
+
+.question-card h3 {
+  margin: 18px 0;
+  font-size: 19px;
+}
+
+.tag {
+  background: #eeeaff;
+  color: #635bdb;
+  padding: 7px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.options {
+  display: grid;
+  gap: 12px;
+}
+
+.option {
+  background: white;
+  color: #333;
+  border: 1px solid #ddd;
+  text-align: left;
+  font-weight: normal;
+}
+
+.option:hover:not(:disabled) {
+  border-color: #635bdb;
+  background: #f5f3ff;
+  color: #635bdb;
+}
+
+.option:disabled {
+  cursor: default;
+  opacity: 1;
+}
+
+.option.correct {
+  background: #e3f8e9;
+  border-color: #36a65c;
+  color: #18763b;
+}
+
+.option.wrong {
+  background: #ffe8e8;
+  border-color: #e34b4b;
+  color: #b22222;
+}
+
+.feedback {
+  margin: 20px 0;
+  font-weight: bold;
+  line-height: 1.6;
+}
+
+.next-btn {
+  margin-top: 10px;
+}
+
+.result h2 {
+  font-size: 45px;
+  color: #635bdb;
+  margin: 20px;
+}
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.55);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+}
+
+.modal {
+  background: white;
+  padding: 30px;
+  border-radius: 15px;
+  max-width: 420px;
+  width: 100%;
+}
+
+.modal h2 {
+  margin-bottom: 20px;
+}
+
+.modal p {
+  color: #666;
+  line-height: 1.7;
+  margin-bottom: 25px;
+}
+
+footer {
+  text-align: center;
+  color: #888;
+  font-size: 13px;
+  padding: 25px 15px;
+}
+
+@media (max-width: 600px) {
+  .navbar {
+    flex-direction: column;
+    gap: 10px;
+    text-align: center;
+    padding: 18px;
+  }
+
+  .navbar h2 {
+    font-size: 19px;
+  }
+
+  .stats {
+    gap: 8px;
+  }
+
+  .stat-card {
+    padding: 13px 5px;
+  }
+
+  .stat-card span {
+    font-size: 12px;
+  }
+
+  .stat-card h2 {
+    font-size: 20px;
+  }
+
+  .card {
+    padding: 20px;
+  }
+
+  .passage p {
+    font-size: 14px;
+  }
+}
