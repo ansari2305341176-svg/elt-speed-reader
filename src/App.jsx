@@ -250,11 +250,44 @@ const allLevels = [
   },
 ];
 
-// The game uses 10 questions: 3 Beginner, 3 Intermediate and 4 Advanced.
+// Ten questions: 3 Beginner, 3 Intermediate and 4 Advanced.
 const levels = allLevels.map((level, index) => ({
   ...level,
   questions: level.questions.slice(0, [3, 3, 4][index]),
 }));
+
+// Question-specific tips. These guide learners without revealing the answer.
+const questionTips = {
+  "The Sundarbans":
+    "Return to the sentence that describes what the Sundarbans is famous for. Look for the specific name mentioned after the words 'famous for'.",
+
+  "The Importance of Trees":
+    "Read the sentence about the two gases carefully. The passage describes one gas that trees take in and another that they release. Do not confuse the two actions.",
+
+  "A Healthy Lifestyle":
+    "Find the sentence that explains how physical fitness can improve. Focus on the activity mentioned there, not the other healthy habits in the passage.",
+
+  "Digital Education in Bangladesh":
+    "Pay attention to the sentence beginning with 'However'. It introduces the barriers that make digital education difficult for some communities.",
+
+  "Climate Change and Bangladesh":
+    "Revisit the opening sentence. It gives the geographical reasons for Bangladesh's vulnerability. Separate the causes from the later effects.",
+
+  "The Growth of the Garment Industry":
+    "Look at the final sentence. It explains what must improve for long-term growth. Identify all the areas listed, rather than focusing only on exports or employment.",
+
+  "Artificial Intelligence and Employment":
+    "For a central-argument question, consider the whole passage. Notice that it discusses both possible job losses and new opportunities, then explains what helps society manage the change.",
+
+  "Economic Growth and Inequality":
+    "Compare what national output measures with what the passage says it cannot show. The key distinction is between the size of an economy and who benefits from its growth.",
+
+  "The Role of Independent Media":
+    "Look for the relationship between credibility and public trust. The passage contrasts professional reporting with sensationalism and political pressure.",
+
+  "Renewable Energy Transition":
+    "Review the sentence listing what is needed in addition to solar panels and wind turbines. The main idea is about the conditions required for success.",
+};
 
 function App() {
   const [phase, setPhase] = useState("reading");
@@ -270,20 +303,24 @@ function App() {
 
   const currentLevel = levels[levelIndex];
   const currentQuestion = currentLevel.questions[questionIndex];
+
   const totalQuestions = levels.reduce(
     (total, level) => total + level.questions.length,
     0
   );
-  const completedQuestions = levels
-    .slice(0, levelIndex)
-    .reduce((total, level) => total + level.questions.length, 0) + questionIndex;
+
+  const completedQuestions =
+    levels
+      .slice(0, levelIndex)
+      .reduce((total, level) => total + level.questions.length, 0) +
+    questionIndex;
 
   const isCorrect = selectedAnswer === currentQuestion.answer;
   const answered = selectedAnswer !== null;
   const progress = (completedQuestions / totalQuestions) * 100;
   const remainingProgress = (time / READING_TIME) * 100;
 
-  // Countdown for each individual passage.
+  // Countdown for each passage.
   useEffect(() => {
     if (phase !== "reading") return;
 
@@ -322,7 +359,7 @@ function App() {
     }
   };
 
-  // A wrong answer sends the player back to the SAME passage.
+  // Wrong answer: return to the same passage.
   const rereadPassage = () => {
     setSelectedAnswer(null);
     setTime(READING_TIME);
@@ -361,7 +398,9 @@ function App() {
   };
 
   const toggleTheme = () => {
-    setTheme((previous) => (previous === "light" ? "blue" : "light"));
+    setTheme((previous) =>
+      previous === "light" ? "blue" : "light"
+    );
   };
 
   return (
@@ -377,7 +416,10 @@ function App() {
           </div>
 
           <div className="header-actions">
-            <span className="edition-badge">🇧🇩 Bangladesh Edition</span>
+            <span className="edition-badge">
+              🇧🇩 Bangladesh Edition
+            </span>
+
             <button
               className="theme-toggle"
               onClick={toggleTheme}
@@ -399,8 +441,11 @@ function App() {
                   <h2>{currentLevel.name} Level</h2>
                   <p>{currentLevel.description}</p>
                 </div>
+
                 <div className="level-count">
-                  <strong>{questionIndex + 1}/{currentLevel.questions.length}</strong>
+                  <strong>
+                    {questionIndex + 1}/{currentLevel.questions.length}
+                  </strong>
                   <span>Level questions</span>
                 </div>
               </section>
@@ -408,8 +453,11 @@ function App() {
               <section className="overall-progress">
                 <div className="overall-progress-label">
                   <span>Overall challenge progress</span>
-                  <strong>{completedQuestions}/{totalQuestions} completed</strong>
+                  <strong>
+                    {completedQuestions}/{totalQuestions} completed
+                  </strong>
                 </div>
+
                 <div className="progress-track">
                   <div
                     className="overall-progress-fill"
@@ -430,9 +478,10 @@ function App() {
               </div>
 
               <h2>Read carefully before answering</h2>
+
               <p className="section-description">
-                Every question has its own passage. You have 30 seconds, or
-                you can finish early when you are ready.
+                Every question has its own passage. You have 30 seconds,
+                or you can finish early when you are ready.
               </p>
 
               <div className="timer-panel">
@@ -452,13 +501,16 @@ function App() {
                   aria-valuenow={time}
                 >
                   <div
-                    className={`progress-fill ${time <= 10 ? "progress-warning" : ""}`}
+                    className={`progress-fill ${
+                      time <= 10 ? "progress-warning" : ""
+                    }`}
                     style={{ width: `${remainingProgress}%` }}
                   />
                 </div>
 
                 <div className="timer-feedback">
                   <span>{Math.round(100 - remainingProgress)}% elapsed</span>
+
                   <span>
                     {time > 20
                       ? "Take your time and understand the passage."
@@ -476,26 +528,32 @@ function App() {
                   <span className="passage-category">
                     {currentLevel.name.toUpperCase()} PASSAGE
                   </span>
+
                   <span className="word-count">
                     Question {completedQuestions + 1}
                   </span>
                 </div>
 
                 <h3>{currentQuestion.passageTitle}</h3>
-                <p className="passage-text">{currentQuestion.passage}</p>
+                <p className="passage-text">
+                  {currentQuestion.passage}
+                </p>
               </article>
 
               <div className="reading-footer">
                 <div className="reading-tip">
                   <span>💡</span>
                   <p>
-                    <strong>Reading strategy:</strong> Identify the main idea,
-                    supporting details and important keywords. You may need
-                    these details to answer correctly.
+                    <strong>Reading strategy:</strong> Identify the main
+                    idea, supporting details and important keywords.
+                    You may need these details to answer correctly.
                   </p>
                 </div>
 
-                <button className="primary-button" onClick={finishReading}>
+                <button
+                  className="primary-button"
+                  onClick={finishReading}
+                >
                   I Have Finished Reading →
                 </button>
               </div>
@@ -505,7 +563,10 @@ function App() {
           {phase === "quiz" && (
             <section className="game-card">
               <div className="section-heading">
-                <span className="step-label">COMPREHENSION TEST</span>
+                <span className="step-label">
+                  COMPREHENSION TEST
+                </span>
+
                 <span className="status-badge quiz-status">
                   1 point for each correct answer
                 </span>
@@ -523,10 +584,12 @@ function App() {
                   <span>⭐ Score</span>
                   <strong>{score}</strong>
                 </div>
+
                 <div className="stat-box">
                   <span>🔥 Streak</span>
                   <strong>{streak}</strong>
                 </div>
+
                 <div className="stat-box">
                   <span>✅ Correct</span>
                   <strong>{correctCount}</strong>
@@ -537,13 +600,18 @@ function App() {
                 <span className="question-number">
                   {currentQuestion.passageTitle.toUpperCase()}
                 </span>
+
                 <h3>{currentQuestion.question}</h3>
 
                 <div className="options-list">
                   {currentQuestion.options.map((option, index) => {
                     let optionClass = "option-button";
 
-                    if (answered && isCorrect && index === currentQuestion.answer) {
+                    if (
+                      answered &&
+                      isCorrect &&
+                      index === currentQuestion.answer
+                    ) {
                       optionClass += " correct-option";
                     } else if (
                       answered &&
@@ -563,10 +631,15 @@ function App() {
                         <span className="option-letter">
                           {String.fromCharCode(65 + index)}
                         </span>
+
                         <span>{option}</span>
-                        {answered && isCorrect && index === currentQuestion.answer && (
-                          <span className="option-mark">✓</span>
-                        )}
+
+                        {answered &&
+                          isCorrect &&
+                          index === currentQuestion.answer && (
+                            <span className="option-mark">✓</span>
+                          )}
+
                         {answered &&
                           index === selectedAnswer &&
                           !isCorrect && (
@@ -580,15 +653,28 @@ function App() {
                 {answered && (
                   <div
                     className={`feedback-box ${
-                      isCorrect ? "correct-feedback" : "wrong-feedback"
+                      isCorrect
+                        ? "correct-feedback"
+                        : "wrong-feedback"
                     }`}
                   >
                     <h4>
                       {isCorrect
                         ? "🎉 Correct! You earned 1 point."
-                        : "❌ Incorrect. Please read the passage again and try once more."}
+                        : "❌ Not quite. Try using this reading tip."}
                     </h4>
-                    {isCorrect && <p>{currentQuestion.explanation}</p>}
+
+                    {isCorrect ? (
+                      <p>{currentQuestion.explanation}</p>
+                    ) : (
+                      <div className="feedback-tip">
+                        <strong>💡 Reading tip</strong>
+                        <p>
+                          {questionTips[currentQuestion.passageTitle] ||
+                            "Read the passage again and look for the sentence that directly supports the question. Pay attention to keywords and the relationship between ideas."}
+                        </p>
+                      </div>
+                    )}
                   </div>
                 )}
 
@@ -608,7 +694,9 @@ function App() {
                   >
                     {completedQuestions === totalQuestions - 1
                       ? "Complete Challenge →"
-                      : questionIndex === currentLevel.questions.length - 1 && levelIndex < 2
+                      : questionIndex ===
+                          currentLevel.questions.length - 1 &&
+                        levelIndex < levels.length - 1
                       ? `Unlock ${levels[levelIndex + 1].name} Level →`
                       : "Continue to Next Passage →"}
                   </button>
@@ -620,21 +708,29 @@ function App() {
           {phase === "results" && (
             <section className="game-card results-card">
               <div className="result-icon">🏆</div>
-              <span className="step-label">ALL THREE LEVELS COMPLETED</span>
+
+              <span className="step-label">
+                ALL THREE LEVELS COMPLETED
+              </span>
+
               <h2>Challenge Completed!</h2>
+
               <p className="section-description">
                 You have successfully answered all 10 questions.
               </p>
 
               <div className="final-score">
                 <span>YOUR FINAL SCORE</span>
-                <strong>{score} / {totalQuestions}</strong>
+                <strong>
+                  {score} / {totalQuestions}
+                </strong>
+
                 <p>
                   {score === totalQuestions
                     ? "Outstanding! You achieved a perfect score!"
-                    : score >= 12
-                    ? "Excellent performance! Keep sharpening your skills."
                     : score >= 8
+                    ? "Excellent performance! Keep sharpening your skills."
+                    : score >= 6
                     ? "Good effort! Continue practising."
                     : "You completed the challenge. Keep learning and improving!"}
                 </p>
@@ -645,10 +741,12 @@ function App() {
                   <span>Correct answers</span>
                   <strong>{correctCount}</strong>
                 </div>
+
                 <div className="result-stat">
                   <span>Passages read</span>
                   <strong>{totalQuestions}</strong>
                 </div>
+
                 <div className="result-stat">
                   <span>Best streak</span>
                   <strong>{bestStreak}</strong>
@@ -657,17 +755,28 @@ function App() {
 
               <div className="level-results">
                 <h3>Challenge completed</h3>
+
                 {levels.map((level, index) => (
-                  <div className="level-result-row" key={level.name}>
+                  <div
+                    className="level-result-row"
+                    key={level.name}
+                  >
                     <span>
                       Level {index + 1}: {level.name}
                     </span>
-                    <strong>{level.questions.length} / {level.questions.length} unlocked</strong>
+
+                    <strong>
+                      {level.questions.length} /{" "}
+                      {level.questions.length} unlocked
+                    </strong>
                   </div>
                 ))}
               </div>
 
-              <button className="primary-button restart-button" onClick={restartGame}>
+              <button
+                className="primary-button restart-button"
+                onClick={restartGame}
+              >
                 ↻ Start a New Challenge
               </button>
             </section>
@@ -676,7 +785,9 @@ function App() {
 
         <footer className="footer">
           <p>ELT Speed Reader • Bangladesh Edition</p>
-          <span>10 passages. 10 questions. 3 difficulty levels.</span>
+          <span>
+            10 passages. 10 questions. 3 difficulty levels.
+          </span>
         </footer>
       </div>
     </div>
