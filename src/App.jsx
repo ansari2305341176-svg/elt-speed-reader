@@ -4,7 +4,7 @@ import "./App.css";
 
 const READING_TIME = 30;
 
-const levels = [
+const allLevels = [
   {
     name: "Beginner",
     description: "Build your reading comprehension foundation.",
@@ -250,6 +250,12 @@ const levels = [
   },
 ];
 
+// The game uses 10 questions: 3 Beginner, 3 Intermediate and 4 Advanced.
+const levels = allLevels.map((level, index) => ({
+  ...level,
+  questions: level.questions.slice(0, [3, 3, 4][index]),
+}));
+
 function App() {
   const [phase, setPhase] = useState("reading");
   const [levelIndex, setLevelIndex] = useState(0);
@@ -394,7 +400,7 @@ function App() {
                   <p>{currentLevel.description}</p>
                 </div>
                 <div className="level-count">
-                  <strong>{questionIndex + 1}/5</strong>
+                  <strong>{questionIndex + 1}/{currentLevel.questions.length}</strong>
                   <span>Level questions</span>
                 </div>
               </section>
@@ -537,7 +543,7 @@ function App() {
                   {currentQuestion.options.map((option, index) => {
                     let optionClass = "option-button";
 
-                    if (answered && index === currentQuestion.answer) {
+                    if (answered && isCorrect && index === currentQuestion.answer) {
                       optionClass += " correct-option";
                     } else if (
                       answered &&
@@ -558,7 +564,7 @@ function App() {
                           {String.fromCharCode(65 + index)}
                         </span>
                         <span>{option}</span>
-                        {answered && index === currentQuestion.answer && (
+                        {answered && isCorrect && index === currentQuestion.answer && (
                           <span className="option-mark">✓</span>
                         )}
                         {answered &&
@@ -580,9 +586,9 @@ function App() {
                     <h4>
                       {isCorrect
                         ? "🎉 Correct! You earned 1 point."
-                        : "❌ Incorrect! You must read the passage again."}
+                        : "❌ Incorrect. Please read the passage again and try once more."}
                     </h4>
-                    <p>{currentQuestion.explanation}</p>
+                    {isCorrect && <p>{currentQuestion.explanation}</p>}
                   </div>
                 )}
 
@@ -602,7 +608,7 @@ function App() {
                   >
                     {completedQuestions === totalQuestions - 1
                       ? "Complete Challenge →"
-                      : questionIndex === 4 && levelIndex < 2
+                      : questionIndex === currentLevel.questions.length - 1 && levelIndex < 2
                       ? `Unlock ${levels[levelIndex + 1].name} Level →`
                       : "Continue to Next Passage →"}
                   </button>
@@ -617,14 +623,14 @@ function App() {
               <span className="step-label">ALL THREE LEVELS COMPLETED</span>
               <h2>Challenge Completed!</h2>
               <p className="section-description">
-                You have successfully answered all 15 questions.
+                You have successfully answered all 10 questions.
               </p>
 
               <div className="final-score">
                 <span>YOUR FINAL SCORE</span>
                 <strong>{score} / {totalQuestions}</strong>
                 <p>
-                  {score === 15
+                  {score === totalQuestions
                     ? "Outstanding! You achieved a perfect score!"
                     : score >= 12
                     ? "Excellent performance! Keep sharpening your skills."
@@ -641,7 +647,7 @@ function App() {
                 </div>
                 <div className="result-stat">
                   <span>Passages read</span>
-                  <strong>15</strong>
+                  <strong>{totalQuestions}</strong>
                 </div>
                 <div className="result-stat">
                   <span>Best streak</span>
@@ -656,7 +662,7 @@ function App() {
                     <span>
                       Level {index + 1}: {level.name}
                     </span>
-                    <strong>5 / 5 unlocked</strong>
+                    <strong>{level.questions.length} / {level.questions.length} unlocked</strong>
                   </div>
                 ))}
               </div>
@@ -670,7 +676,7 @@ function App() {
 
         <footer className="footer">
           <p>ELT Speed Reader • Bangladesh Edition</p>
-          <span>15 passages. 15 questions. 3 difficulty levels.</span>
+          <span>10 passages. 10 questions. 3 difficulty levels.</span>
         </footer>
       </div>
     </div>
