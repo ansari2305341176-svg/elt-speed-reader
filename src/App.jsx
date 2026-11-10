@@ -1,596 +1,414 @@
 
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import "./App.css";
 
-// SHORT READING PASSAGE
-const passage = `Bangladesh has made significant progress in digital education. Many universities now use online platforms to conduct classes and share learning materials. Students can access digital books, attend virtual lectures and communicate with teachers. However, rural students still face challenges due to limited internet access. Better infrastructure can make education more accessible to everyone.`;
+const READING_TIME = 30;
 
-// QUIZ QUESTIONS
 const questions = [
   {
-    type: "Skimming",
-    question: "What is the main idea of the passage?",
+    question: "What is the main topic of the passage?",
     options: [
-      "Agricultural development",
+      "The history of Bangladesh",
       "Digital education in Bangladesh",
-      "International tourism",
-      "Population growth"
+      "The development of agriculture",
+      "Online shopping",
     ],
     answer: 1,
     explanation:
-      "The passage focuses on the progress and challenges of digital education in Bangladesh."
+      "The passage mainly discusses the progress and challenges of digital education in Bangladesh.",
   },
   {
-    type: "Scanning",
-    question: "What do universities use to conduct classes?",
+    question: "What are many universities using?",
     options: [
       "Online platforms",
-      "Radio stations",
-      "Newspapers",
-      "Printed posters"
+      "Printed newspapers",
+      "Radio programmes",
+      "Traditional libraries only",
     ],
     answer: 0,
     explanation:
-      "The passage states that many universities use online platforms to conduct classes."
+      "The passage says that many universities use online platforms to conduct classes and share learning materials.",
   },
   {
-    type: "Scanning",
-    question: "What can students access digitally?",
+    question: "What can students access through digital education?",
     options: [
-      "Only newspapers",
-      "Only entertainment",
+      "Only classroom lectures",
+      "Free transportation",
       "Digital books and virtual lectures",
-      "Only printed materials"
+      "Government jobs",
     ],
     answer: 2,
     explanation:
-      "Students can access digital books and attend virtual lectures."
+      "Students can access digital books, attend virtual lectures and communicate with teachers.",
   },
   {
-    type: "Scanning",
-    question: "Which students face internet-related challenges?",
+    question: "What challenge do rural students face?",
     options: [
-      "Urban professionals",
-      "Rural students",
-      "University teachers",
-      "International students"
+      "A lack of teachers everywhere",
+      "Limited internet access",
+      "Too many online classes",
+      "A lack of digital books",
     ],
     answer: 1,
     explanation:
-      "The passage specifically mentions that rural students face limited internet access."
+      "The passage identifies limited internet access as a major challenge for rural students.",
   },
   {
-    type: "Skimming",
-    question: "What solution does the passage suggest?",
+    question: "What could make digital education more accessible?",
     options: [
-      "Reducing university admissions",
-      "Stopping online classes",
+      "Reducing school hours",
+      "Closing online platforms",
       "Improving infrastructure",
-      "Removing digital books"
+      "Removing digital books",
     ],
     answer: 2,
     explanation:
-      "Better infrastructure can improve access to education for everyone."
-  }
+      "Better infrastructure can improve access to digital education for everyone.",
+  },
 ];
 
 function App() {
-  const [phase, setPhase] = useState("welcome");
-  const [theme, setTheme] = useState("light");
-
-  const [time, setTime] = useState(30);
-  const [current, setCurrent] = useState(0);
-  const [selected, setSelected] = useState(null);
-
+  const [phase, setPhase] = useState("reading");
+  const [time, setTime] = useState(READING_TIME);
+  const [questionIndex, setQuestionIndex] = useState(0);
+  const [selectedAnswer, setSelectedAnswer] = useState(null);
   const [score, setScore] = useState(0);
-  const [correct, setCorrect] = useState(0);
+  const [correctCount, setCorrectCount] = useState(0);
   const [streak, setStreak] = useState(0);
   const [bestStreak, setBestStreak] = useState(0);
+  const [theme, setTheme] = useState("light");
 
-  const [answers, setAnswers] = useState([]);
+  const currentQuestion = questions[questionIndex];
+  const answered = selectedAnswer !== null;
+  const isCorrect = selectedAnswer === currentQuestion?.answer;
+  const progress = ((READING_TIME - time) / READING_TIME) * 100;
+  const remainingProgress = (time / READING_TIME) * 100;
 
-  // READING TIMER
+  // Countdown timer. When it reaches zero, the quiz starts automatically.
   useEffect(() => {
     if (phase !== "reading") return;
 
-    const timer = setInterval(() => {
+    if (time <= 0) {
+      setPhase("quiz");
+      return;
+    }
+
+    const timer = setTimeout(() => {
       setTime((previous) => Math.max(0, previous - 1));
     }, 1000);
 
-    return () => clearInterval(timer);
-  }, [phase]);
-
-  // AUTOMATIC TRANSITION TO QUIZ
-  useEffect(() => {
-    if (phase === "reading" && time === 0) {
-      setPhase("quiz");
-    }
+    return () => clearTimeout(timer);
   }, [phase, time]);
 
-  // START GAME
-  function startGame() {
-    setPhase("reading");
-    setTime(30);
-  }
+  const finishReading = () => {
+    setPhase("quiz");
+  };
 
-  // ANSWER VALIDATION
-  function submitAnswer(index) {
-    if (selected !== null) return;
+  const handleAnswer = (answerIndex) => {
+    if (answered) return;
 
-    setSelected(index);
+    setSelectedAnswer(answerIndex);
 
-    const isCorrect = index === questions[current].answer;
-
-    setAnswers((previous) => [
-      ...previous,
-      {
-        question: current,
-        selected: index,
-        correct: isCorrect
-      }
-    ]);
-
-    if (isCorrect) {
-      setScore((previous) => previous + 10);
-      setCorrect((previous) => previous + 1);
-
-      const newStreak = streak + 1;
-
-      setStreak(newStreak);
-
-      setBestStreak((previous) =>
-        Math.max(previous, newStreak)
-      );
+    if (answerIndex === currentQuestion.answer) {
+      setScore((previous) => previous + 1);
+      setCorrectCount((previous) => previous + 1);
+      setStreak((previous) => {
+        const newStreak = previous + 1;
+        setBestStreak((best) => Math.max(best, newStreak));
+        return newStreak;
+      });
     } else {
       setStreak(0);
     }
-  }
+  };
 
-  // NEXT QUESTION
-  function nextQuestion() {
-    if (current < questions.length - 1) {
-      setCurrent((previous) => previous + 1);
-      setSelected(null);
+  const nextQuestion = () => {
+    if (questionIndex === questions.length - 1) {
+      setPhase("results");
     } else {
-      setPhase("result");
+      setQuestionIndex((previous) => previous + 1);
+      setSelectedAnswer(null);
     }
-  }
+  };
 
-  // RESTART GAME
-  function restartGame() {
-    setPhase("welcome");
-    setTime(30);
-    setCurrent(0);
-    setSelected(null);
-
+  const restartGame = () => {
+    setPhase("reading");
+    setTime(READING_TIME);
+    setQuestionIndex(0);
+    setSelectedAnswer(null);
     setScore(0);
-    setCorrect(0);
+    setCorrectCount(0);
     setStreak(0);
     setBestStreak(0);
+  };
 
-    setAnswers([]);
-  }
-
-  // THEME SWITCH
-  function toggleTheme() {
-    setTheme((previous) =>
-      previous === "light" ? "blue" : "light"
-    );
-  }
-
-  const question = questions[current];
-
-  const accuracy = Math.round(
-    (correct / questions.length) * 100
-  );
+  const toggleTheme = () => {
+    setTheme((previous) => (previous === "light" ? "blue" : "light"));
+  };
 
   return (
     <div className={`app ${theme === "blue" ? "blue-theme" : ""}`}>
-
-      {/* NAVBAR */}
-      <header className="navbar">
-
-        <div className="brand">
-          <div className="brand-icon">📖</div>
-
-          <div>
-            <h2>ELT Speed Reader</h2>
-            <span>Skimming & Scanning Challenge</span>
-          </div>
-        </div>
-
-        <div className="nav-actions">
-
-          <div className="header-badge">
-            🇧🇩 Bangladesh Edition
-          </div>
-
-          <button
-            className="theme-toggle"
-            onClick={toggleTheme}
-            aria-label="Switch colour theme"
-          >
-            {theme === "light" ? "🔵 Blue Mode" : "☀ White Mode"}
-          </button>
-
-        </div>
-
-      </header>
-
-      <main className="container">
-
-        {/* GAME STATISTICS */}
-        <div className="stats">
-
-          <div className="stat-card">
-            <div className="stat-icon purple">⭐</div>
+      <div className="container">
+        <header className="header">
+          <div className="brand">
+            <div className="brand-icon">📖</div>
             <div>
-              <span>Total Score</span>
-              <h2>{score}</h2>
+              <h1>ELT Speed Reader</h1>
+              <p>Read fast. Think smart. Score better.</p>
             </div>
           </div>
 
-          <div className="stat-card">
-            <div className="stat-icon blue">🎯</div>
-            <div>
-              <span>Difficulty</span>
-              <h2>Easy</h2>
-            </div>
-          </div>
-
-          <div className="stat-card">
-            <div className="stat-icon orange">🔥</div>
-            <div>
-              <span>Streak</span>
-              <h2>{streak}</h2>
-            </div>
-          </div>
-
-        </div>
-
-        {/* WELCOME SCREEN */}
-        {phase === "welcome" && (
-          <section className="welcome card">
-
-            <div className="welcome-icon">🚀</div>
-
-            <span className="eyebrow">
-              INTERACTIVE ELT TOOLKIT
-            </span>
-
-            <h1>Challenge Your Reading Speed!</h1>
-
-            <p>
-              Improve your English reading skills through
-              an exciting skimming and scanning challenge.
-            </p>
-
-            <div className="feature-row">
-              <div>⏱️ 30 Seconds</div>
-              <div>📝 5 Questions</div>
-              <div>🏆 50 Points</div>
-            </div>
-
+          <div className="header-actions">
+            <span className="edition-badge">🇧🇩 Bangladesh Edition</span>
             <button
-              className="primary-btn"
-              onClick={startGame}
+              className="theme-toggle"
+              onClick={toggleTheme}
+              aria-label="Switch colour theme"
             >
-              Start Challenge →
+              {theme === "light" ? "🔵 Blue Mode" : "☀️ White Mode"}
             </button>
+          </div>
+        </header>
 
-            <p className="small-note">
-              Designed for Bangladeshi University Students
-            </p>
-
-          </section>
-        )}
-
-        {/* READING PHASE */}
-        {phase === "reading" && (
-          <section className="card reading-section">
-
-            <div className="section-heading">
-
-              <div>
-                <span className="eyebrow">PHASE 01</span>
-                <h2>📚 Reading Time</h2>
+        <main>
+          {phase === "reading" && (
+            <section className="game-card">
+              <div className="section-heading">
+                <span className="step-label">STEP 1 OF 2</span>
+                <span className="status-badge reading-status">Reading time</span>
               </div>
 
-              <div className={`timer ${
-                time <= 10 ? "urgent" : ""
-              }`}>
-                <span>TIME LEFT</span>
-                <strong>
-                  00:{String(time).padStart(2, "0")}
-                </strong>
-              </div>
+              <h2>Read the passage carefully</h2>
+              <p className="section-description">
+                You have 30 seconds. Finished early? Start the questions whenever
+                you are ready.
+              </p>
 
-            </div>
-
-            <div className="timer-track">
-              <div
-                className="timer-fill"
-                style={{
-                  width: `${(time / 30) * 100}%`
-                }}
-              />
-            </div>
-
-            <div className="reading-instruction">
-              💡 Read the short passage carefully.
-              Questions will appear automatically after 30 seconds.
-            </div>
-
-            <div className="passage-box">
-
-              <div className="passage-heading">
-                <h3>Digital Education in Bangladesh</h3>
-                <span>📖 Short Passage</span>
-              </div>
-
-              <p>{passage}</p>
-
-              <div className="word-count">
-                Approximately 50 words per minute challenge
-              </div>
-
-            </div>
-
-            <div className="reading-footer">
-              <span>🔒 Questions are locked during reading</span>
-              <span>{time} seconds remaining</span>
-            </div>
-
-          </section>
-        )}
-
-        {/* QUIZ PHASE */}
-        {phase === "quiz" && (
-          <section className="quiz-section">
-
-            <div className="quiz-top">
-
-              <div>
-                <span className="eyebrow">PHASE 02</span>
-                <h2>🧠 Test Your Understanding</h2>
-              </div>
-
-              <div className="question-number">
-                {current + 1} / {questions.length}
-              </div>
-
-            </div>
-
-            <div className="question-progress">
-              <div
-                style={{
-                  width: `${
-                    ((current + 1) / questions.length) * 100
-                  }%`
-                }}
-              />
-            </div>
-
-            <div className="card question-card">
-
-              <div className="question-meta">
-
-                <span className="tag">
-                  {question.type}
-                </span>
-
-                <span className="points">
-                  +10 POINTS
-                </span>
-
-              </div>
-
-              <h3>{question.question}</h3>
-
-              <div className="options">
-
-                {question.options.map((option, index) => {
-
-                  const isCorrect =
-                    index === question.answer;
-
-                  const isSelected =
-                    selected === index;
-
-                  let optionClass = "option";
-
-                  if (selected !== null && isCorrect) {
-                    optionClass += " correct";
-                  } else if (isSelected && !isCorrect) {
-                    optionClass += " wrong";
-                  }
-
-                  return (
-                    <button
-                      key={index}
-                      className={optionClass}
-                      onClick={() => submitAnswer(index)}
-                      disabled={selected !== null}
-                    >
-
-                      <span className="option-letter">
-                        {String.fromCharCode(65 + index)}
-                      </span>
-
-                      <span>{option}</span>
-
-                      <span className="option-mark">
-                        {selected !== null && isCorrect
-                          ? "✓"
-                          : isSelected && !isCorrect
-                          ? "✕"
-                          : ""}
-                      </span>
-
-                    </button>
-                  );
-                })}
-
-              </div>
-
-              {/* INSTANT FEEDBACK */}
-              {selected !== null && (
-                <div className={`feedback ${
-                  selected === question.answer
-                    ? "success"
-                    : "error"
-                }`}>
-
-                  <h3>
-                    {selected === question.answer
-                      ? "🎉 Excellent! Correct Answer!"
-                      : "❌ Not Quite Right!"}
-                  </h3>
-
-                  <p>
-                    {selected === question.answer
-                      ? "You earned 10 points. Keep going!"
-                      : `Correct answer: ${
-                          question.options[question.answer]
-                        }`}
-                  </p>
-
-                  <div className="explanation">
-                    <strong>Explanation:</strong>{" "}
-                    {question.explanation}
-                  </div>
-
+              <div className="timer-panel">
+                <div className="timer-information">
+                  <span>⏱️ Time remaining</span>
+                  <strong className={time <= 10 ? "time-warning" : ""}>
+                    {time}s
+                  </strong>
                 </div>
-              )}
 
-              <div className="question-footer">
+                <div
+                  className="progress-track"
+                  role="progressbar"
+                  aria-label="Reading time remaining"
+                  aria-valuemin="0"
+                  aria-valuemax="30"
+                  aria-valuenow={time}
+                >
+                  <div
+                    className={`progress-fill ${time <= 10 ? "progress-warning" : ""}`}
+                    style={{ width: `${remainingProgress}%` }}
+                  />
+                </div>
 
+                <div className="timer-feedback">
+                  <span>{Math.round(progress)}% elapsed</span>
+                  <span>
+                    {time > 20
+                      ? "Plenty of time — keep reading!"
+                      : time > 10
+                      ? "Good progress — stay focused!"
+                      : time > 0
+                      ? "Almost time! Get ready for the quiz."
+                      : "Reading time is over!"}
+                  </span>
+                </div>
+              </div>
+
+              <article className="passage-box">
+                <div className="passage-topline">
+                  <span className="passage-category">EDUCATION</span>
+                  <span className="word-count">Short passage</span>
+                </div>
+
+                <h3>Digital Education in Bangladesh</h3>
+
+                <p className="passage-text">
+                  Bangladesh has made significant progress in digital education.
+                  Many universities now use online platforms to conduct classes
+                  and share learning materials. Students can access digital
+                  books, attend virtual lectures and communicate with teachers.
+                  However, rural students still face challenges due to limited
+                  internet access. Better infrastructure can make education more
+                  accessible to everyone.
+                </p>
+              </article>
+
+              <div className="reading-footer">
+                <div className="reading-tip">
+                  <span>💡</span>
+                  <p>
+                    <strong>Tip:</strong> Focus on the main idea and important
+                    details. You do not need to memorize every word.
+                  </p>
+                </div>
+
+                <button className="primary-button finish-button" onClick={finishReading}>
+                  I Have Finished Reading →
+                </button>
+              </div>
+            </section>
+          )}
+
+          {phase === "quiz" && (
+            <section className="game-card">
+              <div className="section-heading">
+                <span className="step-label">STEP 2 OF 2</span>
+                <span className="status-badge quiz-status">Quiz time</span>
+              </div>
+
+              <div className="quiz-progress-heading">
+                <h2>Test your understanding</h2>
                 <span>
-                  {selected === null
-                    ? "Select the correct answer"
-                    : "Answer submitted"}
+                  Question {questionIndex + 1} of {questions.length}
                 </span>
+              </div>
 
-                {selected !== null && (
-                  <button
-                    className="primary-btn"
-                    onClick={nextQuestion}
+              <div className="question-progress-track">
+                <div
+                  className="question-progress-fill"
+                  style={{
+                    width: `${((questionIndex + 1) / questions.length) * 100}%`,
+                  }}
+                />
+              </div>
+
+              <div className="stats-grid">
+                <div className="stat-box">
+                  <span>⭐ Score</span>
+                  <strong>{score}</strong>
+                </div>
+                <div className="stat-box">
+                  <span>🔥 Current streak</span>
+                  <strong>{streak}</strong>
+                </div>
+                <div className="stat-box">
+                  <span>✅ Correct</span>
+                  <strong>{correctCount}/{questions.length}</strong>
+                </div>
+              </div>
+
+              <div className="question-box">
+                <span className="question-number">
+                  QUESTION {questionIndex + 1}
+                </span>
+                <h3>{currentQuestion.question}</h3>
+
+                <div className="options-list">
+                  {currentQuestion.options.map((option, index) => {
+                    let optionClass = "option-button";
+
+                    if (answered && index === currentQuestion.answer) {
+                      optionClass += " correct-option";
+                    } else if (
+                      answered &&
+                      index === selectedAnswer &&
+                      !isCorrect
+                    ) {
+                      optionClass += " wrong-option";
+                    }
+
+                    return (
+                      <button
+                        key={index}
+                        className={optionClass}
+                        onClick={() => handleAnswer(index)}
+                        disabled={answered}
+                      >
+                        <span className="option-letter">
+                          {String.fromCharCode(65 + index)}
+                        </span>
+                        <span>{option}</span>
+                        {answered && index === currentQuestion.answer && (
+                          <span className="option-mark">✓</span>
+                        )}
+                        {answered &&
+                          index === selectedAnswer &&
+                          !isCorrect && (
+                            <span className="option-mark">✕</span>
+                          )}
+                      </button>
+                    );
+                  })}
+                </div>
+
+                {answered && (
+                  <div
+                    className={`feedback-box ${isCorrect ? "correct-feedback" : "wrong-feedback"}`}
                   >
-                    {current === questions.length - 1
-                      ? "View Results →"
+                    <h4>
+                      {isCorrect
+                        ? "🎉 Correct! You earned 1 point."
+                        : "❌ Not quite right. No point this time."}
+                    </h4>
+                    <p>{currentQuestion.explanation}</p>
+                  </div>
+                )}
+
+                {answered && (
+                  <button className="primary-button next-button" onClick={nextQuestion}>
+                    {questionIndex === questions.length - 1
+                      ? "View My Results →"
                       : "Next Question →"}
                   </button>
                 )}
+              </div>
+            </section>
+          )}
 
+          {phase === "results" && (
+            <section className="game-card results-card">
+              <div className="result-icon">🏆</div>
+              <span className="step-label">CHALLENGE COMPLETED</span>
+              <h2>Your reading results</h2>
+              <p className="section-description">
+                Great effort! Here is your performance summary.
+              </p>
+
+              <div className="final-score">
+                <span>YOUR FINAL SCORE</span>
+                <strong>{score} / {questions.length}</strong>
+                <p>
+                  {score === 5
+                    ? "Excellent! Perfect performance!"
+                    : score >= 3
+                    ? "Well done! Keep practising."
+                    : "Keep learning. You will improve with practice!"}
+                </p>
               </div>
 
-            </div>
-
-          </section>
-        )}
-
-        {/* RESULT SCREEN */}
-        {phase === "result" && (
-          <section className="card result-section">
-
-            <div className="result-icon">🏆</div>
-
-            <span className="eyebrow">
-              CHALLENGE COMPLETED
-            </span>
-
-            <h1>
-              {accuracy >= 80
-                ? "Outstanding Performance!"
-                : accuracy >= 60
-                ? "Great Job!"
-                : accuracy >= 40
-                ? "Good Effort!"
-                : "Keep Practicing!"}
-            </h1>
-
-            <p className="result-subtitle">
-              You have completed the ELT Speed Reading Challenge.
-            </p>
-
-            <div className="score-circle">
-              <strong>{score}</strong>
-              <span>OUT OF 50</span>
-            </div>
-
-            <div className="result-stats">
-
-              <div>
-                <strong>{correct}/5</strong>
-                <span>Correct Answers</span>
+              <div className="result-stats">
+                <div className="result-stat">
+                  <span>✅ Correct answers</span>
+                  <strong>{correctCount}</strong>
+                </div>
+                <div className="result-stat">
+                  <span>❌ Incorrect answers</span>
+                  <strong>{questions.length - correctCount}</strong>
+                </div>
+                <div className="result-stat">
+                  <span>🔥 Best streak</span>
+                  <strong>{bestStreak}</strong>
+                </div>
               </div>
 
-              <div>
-                <strong>{accuracy}%</strong>
-                <span>Accuracy</span>
-              </div>
+              <button className="primary-button restart-button" onClick={restartGame}>
+                ↻ Play Again
+              </button>
+            </section>
+          )}
+        </main>
 
-              <div>
-                <strong>{bestStreak}</strong>
-                <span>Best Streak</span>
-              </div>
-
-            </div>
-
-            <div className="review">
-
-              <h3>📋 Answer Summary</h3>
-
-              {questions.map((q, index) => {
-
-                const result = answers.find(
-                  (item) => item.question === index
-                );
-
-                return (
-                  <div className="review-row" key={index}>
-
-                    <span>
-                      Q{index + 1}. {q.type}
-                    </span>
-
-                    <strong className={
-                      result?.correct
-                        ? "green-text"
-                        : "red-text"
-                    }>
-                      {result?.correct
-                        ? "✓ Correct"
-                        : "✕ Incorrect"}
-                    </strong>
-
-                  </div>
-                );
-              })}
-
-            </div>
-
-            <button
-              className="primary-btn"
-              onClick={restartGame}
-            >
-              ↻ Play Again
-            </button>
-
-          </section>
-        )}
-
-      </main>
-
-      {/* FOOTER */}
-      <footer>
-        <strong>ELT Speed Reader</strong>
-        <p>
-          Interactive English Learning Toolkit | Bangladesh Edition
-        </p>
-        <span>© 2026 All Rights Reserved</span>
-      </footer>
-
+        <footer className="footer">
+          <p>ELT Speed Reader • Bangladesh Edition</p>
+          <span>Improve your reading speed and comprehension.</span>
+        </footer>
+      </div>
     </div>
   );
 }
