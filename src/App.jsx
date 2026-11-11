@@ -4,7 +4,7 @@ import "./App.css";
 
 const READING_TIME = 30;
 
-const allLevels = [
+const levels = [
   {
     name: "Beginner",
     description: "Build your reading comprehension foundation.",
@@ -23,6 +23,8 @@ const allLevels = [
         answer: 0,
         explanation:
           "The passage specifically mentions the Royal Bengal Tiger as one of the most famous features of the Sundarbans.",
+        tip:
+          "Return to the sentence that describes what the Sundarbans is famous for. Look for the specific name mentioned after the words 'famous for'.",
       },
       {
         passageTitle: "The Importance of Trees",
@@ -38,51 +40,8 @@ const allLevels = [
         answer: 1,
         explanation:
           "The passage states that trees absorb carbon dioxide and release oxygen.",
-      },
-      {
-        passageTitle: "A Healthy Lifestyle",
-        passage:
-          "A healthy lifestyle depends on regular exercise, balanced food and sufficient sleep. Walking every day can improve physical fitness. Eating vegetables and fruits provides important nutrients. People who maintain healthy habits may reduce their risk of many diseases.",
-        question: "Which activity can improve physical fitness?",
-        options: [
-          "Skipping meals",
-          "Sleeping all day",
-          "Walking every day",
-          "Avoiding vegetables",
-        ],
-        answer: 2,
-        explanation:
-          "The passage explains that walking every day can improve physical fitness.",
-      },
-      {
-        passageTitle: "The Padma Bridge",
-        passage:
-          "The Padma Bridge is an important infrastructure project in Bangladesh. It connects the southwestern region with the central part of the country. The bridge has improved communication and transportation. It also helps people and businesses move goods more easily.",
-        question: "What has the Padma Bridge improved?",
-        options: [
-          "International air travel",
-          "Communication and transportation",
-          "Mountain tourism",
-          "Sea fishing",
-        ],
-        answer: 1,
-        explanation:
-          "The passage directly identifies communication and transportation as major improvements.",
-      },
-      {
-        passageTitle: "The Value of Reading",
-        passage:
-          "Reading books is a useful habit for students. It improves vocabulary, develops imagination and increases knowledge. Regular reading also helps people understand different cultures and ideas. Even reading for twenty minutes every day can create positive learning habits.",
-        question: "What does regular reading improve?",
-        options: [
-          "Physical strength",
-          "Driving ability",
-          "Cooking skills",
-          "Vocabulary",
-        ],
-        answer: 3,
-        explanation:
-          "The passage mentions vocabulary as one of the main benefits of reading.",
+        tip:
+          "Read the sentence about the two gases carefully. The passage describes one gas that trees take in and another that they release. Do not confuse the two actions.",
       },
     ],
   },
@@ -104,6 +63,8 @@ const allLevels = [
         answer: 1,
         explanation:
           "The passage identifies unreliable internet and the cost of devices as barriers, especially in rural communities.",
+        tip:
+          "Pay attention to the sentence beginning with 'However'. It introduces the barriers that make digital education difficult for some communities.",
       },
       {
         passageTitle: "Climate Change and Bangladesh",
@@ -119,51 +80,8 @@ const allLevels = [
         answer: 0,
         explanation:
           "The passage links Bangladesh's vulnerability to its low-lying geography and extensive river systems.",
-      },
-      {
-        passageTitle: "The Growth of the Garment Industry",
-        passage:
-          "The ready-made garment industry has played a major role in Bangladesh's economic development. It creates employment opportunities and earns foreign currency through exports. Millions of workers depend on this sector. Nevertheless, the industry faces challenges involving workplace safety, fair wages and environmental sustainability. Long-term growth requires improvements in all these areas.",
-        question: "According to the passage, what is necessary for the industry's long-term growth?",
-        options: [
-          "Reducing all export activities",
-          "Depending only on low wages",
-          "Improving safety, wages and sustainability",
-          "Closing smaller factories",
-        ],
-        answer: 2,
-        explanation:
-          "The final sentence emphasizes improvements in workplace safety, fair wages and environmental sustainability.",
-      },
-      {
-        passageTitle: "Urbanisation and Traffic",
-        passage:
-          "Rapid urbanisation has increased pressure on transportation systems in many developing cities. As more people move to urban areas, the number of private vehicles often rises. This contributes to traffic congestion, air pollution and wasted working hours. Better public transport, effective urban planning and improved pedestrian facilities can reduce these problems.",
-        question: "Which approach does the passage recommend to reduce urban traffic problems?",
-        options: [
-          "Encouraging more private vehicles",
-          "Expanding roads without planning",
-          "Reducing pedestrian facilities",
-          "Improving public transport and urban planning",
-        ],
-        answer: 3,
-        explanation:
-          "The passage recommends better public transport, effective planning and improved pedestrian facilities.",
-      },
-      {
-        passageTitle: "Financial Inclusion",
-        passage:
-          "Financial inclusion means ensuring that individuals and businesses can access useful and affordable financial services. Mobile banking has helped many people in Bangladesh transfer money and make payments without visiting a bank branch. However, digital literacy, transaction costs and security concerns can limit its benefits. Building trust and improving access are important for wider participation.",
-        question: "What does financial inclusion primarily aim to achieve?",
-        options: [
-          "Access to affordable and useful financial services",
-          "The elimination of all physical banks",
-          "The restriction of digital payments",
-          "The replacement of cash with foreign currency",
-        ],
-        answer: 0,
-        explanation:
-          "The passage defines financial inclusion as access to useful and affordable financial services.",
+        tip:
+          "Revisit the opening sentence. It gives the geographical reasons for Bangladesh's vulnerability. Separate the causes from the later effects.",
       },
     ],
   },
@@ -185,6 +103,8 @@ const allLevels = [
         answer: 2,
         explanation:
           "The passage presents worker preparation, reskilling and social protection as important ways to manage employment changes caused by AI.",
+        tip:
+          "For a central-argument question, consider the whole passage. Notice that it discusses both possible job losses and new opportunities, then explains what helps society manage the change.",
       },
       {
         passageTitle: "Economic Growth and Inequality",
@@ -200,94 +120,12 @@ const allLevels = [
         answer: 1,
         explanation:
           "National output measures economic activity but does not reveal whether the benefits reach different sections of society.",
-      },
-      {
-        passageTitle: "The Role of Independent Media",
-        passage:
-          "Independent media contributes to democratic accountability by investigating public decisions and informing citizens. Its influence, however, depends on credibility and professional standards. When reporting becomes driven by sensationalism or political pressure, public trust may decline. A healthy media environment therefore requires editorial independence, verification of information and opportunities for diverse viewpoints.",
-        question: "Which condition is most important for maintaining public trust in media?",
-        options: [
-          "Publishing information as quickly as possible",
-          "Avoiding criticism of public institutions",
-          "Promoting only popular viewpoints",
-          "Maintaining editorial independence and verifying information",
-        ],
-        answer: 3,
-        explanation:
-          "The passage connects public trust with professional standards, editorial independence and information verification.",
-      },
-      {
-        passageTitle: "Renewable Energy Transition",
-        passage:
-          "Transitioning to renewable energy can reduce dependence on fossil fuels and lower greenhouse gas emissions. Yet the transition is not simply a matter of installing solar panels or wind turbines. Energy storage, grid modernisation, investment and reliable policy frameworks are also necessary. Without these supporting systems, renewable energy may not consistently meet demand. Successful energy transitions therefore require coordinated technological and institutional changes.",
-        question: "What can be inferred about renewable energy projects from the passage?",
-        options: [
-          "Their success depends on supporting infrastructure and policies as well as technology.",
-          "They automatically guarantee uninterrupted electricity.",
-          "They make investment and energy storage unnecessary.",
-          "They can succeed without changes to electricity grids.",
-        ],
-        answer: 0,
-        explanation:
-          "The passage explains that renewable energy requires storage, modern grids, investment and reliable policies in addition to generating technology.",
-      },
-      {
-        passageTitle: "Education and Social Mobility",
-        passage:
-          "Education is frequently regarded as a pathway to social mobility because it can expand people's knowledge, skills and employment opportunities. Nevertheless, educational access alone does not guarantee equal outcomes. Differences in school quality, family income, nutrition and professional networks can influence how individuals benefit from education. Policies that improve both educational quality and wider social conditions are therefore important for reducing persistent inequality.",
-        question: "Which assumption does the passage challenge?",
-        options: [
-          "Education can develop useful skills.",
-          "Employment opportunities can influence social mobility.",
-          "Equal access to education automatically produces equal outcomes.",
-          "Family income can affect educational opportunities.",
-        ],
-        answer: 2,
-        explanation:
-          "The passage argues that access alone does not guarantee equal outcomes because other social and economic factors also matter.",
+        tip:
+          "Compare what national output measures with what the passage says it cannot show. The key distinction is between the size of an economy and who benefits from its growth.",
       },
     ],
   },
 ];
-
-// Ten questions: 3 Beginner, 3 Intermediate and 4 Advanced.
-const levels = allLevels.map((level, index) => ({
-  ...level,
-  questions: level.questions.slice(0, [3, 3, 4][index]),
-}));
-
-// Question-specific tips. These guide learners without revealing the answer.
-const questionTips = {
-  "The Sundarbans":
-    "Return to the sentence that describes what the Sundarbans is famous for. Look for the specific name mentioned after the words 'famous for'.",
-
-  "The Importance of Trees":
-    "Read the sentence about the two gases carefully. The passage describes one gas that trees take in and another that they release. Do not confuse the two actions.",
-
-  "A Healthy Lifestyle":
-    "Find the sentence that explains how physical fitness can improve. Focus on the activity mentioned there, not the other healthy habits in the passage.",
-
-  "Digital Education in Bangladesh":
-    "Pay attention to the sentence beginning with 'However'. It introduces the barriers that make digital education difficult for some communities.",
-
-  "Climate Change and Bangladesh":
-    "Revisit the opening sentence. It gives the geographical reasons for Bangladesh's vulnerability. Separate the causes from the later effects.",
-
-  "The Growth of the Garment Industry":
-    "Look at the final sentence. It explains what must improve for long-term growth. Identify all the areas listed, rather than focusing only on exports or employment.",
-
-  "Artificial Intelligence and Employment":
-    "For a central-argument question, consider the whole passage. Notice that it discusses both possible job losses and new opportunities, then explains what helps society manage the change.",
-
-  "Economic Growth and Inequality":
-    "Compare what national output measures with what the passage says it cannot show. The key distinction is between the size of an economy and who benefits from its growth.",
-
-  "The Role of Independent Media":
-    "Look for the relationship between credibility and public trust. The passage contrasts professional reporting with sensationalism and political pressure.",
-
-  "Renewable Energy Transition":
-    "Review the sentence listing what is needed in addition to solar panels and wind turbines. The main idea is about the conditions required for success.",
-};
 
 function App() {
   const [phase, setPhase] = useState("reading");
@@ -304,10 +142,7 @@ function App() {
   const currentLevel = levels[levelIndex];
   const currentQuestion = currentLevel.questions[questionIndex];
 
-  const totalQuestions = levels.reduce(
-    (total, level) => total + level.questions.length,
-    0
-  );
+  const totalQuestions = 6;
 
   const completedQuestions =
     levels
@@ -315,12 +150,12 @@ function App() {
       .reduce((total, level) => total + level.questions.length, 0) +
     questionIndex;
 
-  const isCorrect = selectedAnswer === currentQuestion.answer;
   const answered = selectedAnswer !== null;
+  const isCorrect = selectedAnswer === currentQuestion.answer;
   const progress = (completedQuestions / totalQuestions) * 100;
   const remainingProgress = (time / READING_TIME) * 100;
 
-  // Countdown for each passage.
+  // Reading timer
   useEffect(() => {
     if (phase !== "reading") return;
 
@@ -340,6 +175,7 @@ function App() {
     setPhase("quiz");
   };
 
+  // Check the selected answer
   const handleAnswer = (answerIndex) => {
     if (answered) return;
 
@@ -359,14 +195,14 @@ function App() {
     }
   };
 
-  // Wrong answer: return to the same passage.
+  // Return to the same passage after a wrong answer
   const rereadPassage = () => {
     setSelectedAnswer(null);
     setTime(READING_TIME);
     setPhase("reading");
   };
 
-  // Only a correct answer unlocks the next question.
+  // Move forward only after a correct answer
   const moveToNextQuestion = () => {
     if (!answered || !isCorrect) return;
 
@@ -385,6 +221,7 @@ function App() {
     setPhase("reading");
   };
 
+  // Restart the complete challenge
   const restartGame = () => {
     setPhase("reading");
     setLevelIndex(0);
@@ -406,6 +243,8 @@ function App() {
   return (
     <div className={`app ${theme === "blue" ? "blue-theme" : ""}`}>
       <div className="container">
+
+        {/* HEADER */}
         <header className="header">
           <div className="brand">
             <div className="brand-icon">📖</div>
@@ -431,12 +270,14 @@ function App() {
         </header>
 
         <main>
+
+          {/* LEVEL AND PROGRESS */}
           {(phase === "reading" || phase === "quiz") && (
             <>
               <section className="level-banner">
                 <div>
                   <span className="level-label">
-                    LEVEL {levelIndex + 1} OF {levels.length}
+                    LEVEL {levelIndex + 1} OF 3
                   </span>
                   <h2>{currentLevel.name} Level</h2>
                   <p>{currentLevel.description}</p>
@@ -444,7 +285,7 @@ function App() {
 
                 <div className="level-count">
                   <strong>
-                    {questionIndex + 1}/{currentLevel.questions.length}
+                    {questionIndex + 1}/2
                   </strong>
                   <span>Level questions</span>
                 </div>
@@ -468,10 +309,12 @@ function App() {
             </>
           )}
 
+          {/* READING PHASE */}
           {phase === "reading" && (
             <section className="game-card">
               <div className="section-heading">
                 <span className="step-label">READ THE PASSAGE</span>
+
                 <span className="status-badge reading-status">
                   Passage {completedQuestions + 1} of {totalQuestions}
                 </span>
@@ -487,6 +330,7 @@ function App() {
               <div className="timer-panel">
                 <div className="timer-information">
                   <span>⏱️ Time remaining</span>
+
                   <strong className={time <= 10 ? "time-warning" : ""}>
                     {time}s
                   </strong>
@@ -509,7 +353,9 @@ function App() {
                 </div>
 
                 <div className="timer-feedback">
-                  <span>{Math.round(100 - remainingProgress)}% elapsed</span>
+                  <span>
+                    {Math.round(100 - remainingProgress)}% elapsed
+                  </span>
 
                   <span>
                     {time > 20
@@ -535,6 +381,7 @@ function App() {
                 </div>
 
                 <h3>{currentQuestion.passageTitle}</h3>
+
                 <p className="passage-text">
                   {currentQuestion.passage}
                 </p>
@@ -543,6 +390,7 @@ function App() {
               <div className="reading-footer">
                 <div className="reading-tip">
                   <span>💡</span>
+
                   <p>
                     <strong>Reading strategy:</strong> Identify the main
                     idea, supporting details and important keywords.
@@ -560,6 +408,7 @@ function App() {
             </section>
           )}
 
+          {/* QUIZ PHASE */}
           {phase === "quiz" && (
             <section className="game-card">
               <div className="section-heading">
@@ -574,6 +423,7 @@ function App() {
 
               <div className="quiz-progress-heading">
                 <h2>Answer the question</h2>
+
                 <span>
                   Question {completedQuestions + 1} of {totalQuestions}
                 </span>
@@ -607,6 +457,7 @@ function App() {
                   {currentQuestion.options.map((option, index) => {
                     let optionClass = "option-button";
 
+                    // Reveal the correct answer only after a correct selection.
                     if (
                       answered &&
                       isCorrect &&
@@ -650,6 +501,7 @@ function App() {
                   })}
                 </div>
 
+                {/* FEEDBACK */}
                 {answered && (
                   <div
                     className={`feedback-box ${
@@ -669,15 +521,14 @@ function App() {
                     ) : (
                       <div className="feedback-tip">
                         <strong>💡 Reading tip</strong>
-                        <p>
-                          {questionTips[currentQuestion.passageTitle] ||
-                            "Read the passage again and look for the sentence that directly supports the question. Pay attention to keywords and the relationship between ideas."}
-                        </p>
+
+                        <p>{currentQuestion.tip}</p>
                       </div>
                     )}
                   </div>
                 )}
 
+                {/* WRONG ANSWER: RETRY */}
                 {answered && !isCorrect && (
                   <button
                     className="primary-button retry-button"
@@ -687,6 +538,7 @@ function App() {
                   </button>
                 )}
 
+                {/* CORRECT ANSWER: NEXT */}
                 {answered && isCorrect && (
                   <button
                     className="primary-button next-button"
@@ -705,6 +557,7 @@ function App() {
             </section>
           )}
 
+          {/* FINAL RESULTS */}
           {phase === "results" && (
             <section className="game-card results-card">
               <div className="result-icon">🏆</div>
@@ -716,11 +569,12 @@ function App() {
               <h2>Challenge Completed!</h2>
 
               <p className="section-description">
-                You have successfully answered all 10 questions.
+                You have successfully answered all 6 questions.
               </p>
 
               <div className="final-score">
                 <span>YOUR FINAL SCORE</span>
+
                 <strong>
                   {score} / {totalQuestions}
                 </strong>
@@ -728,9 +582,9 @@ function App() {
                 <p>
                   {score === totalQuestions
                     ? "Outstanding! You achieved a perfect score!"
-                    : score >= 8
+                    : score >= 5
                     ? "Excellent performance! Keep sharpening your skills."
-                    : score >= 6
+                    : score >= 3
                     ? "Good effort! Continue practising."
                     : "You completed the challenge. Keep learning and improving!"}
                 </p>
@@ -766,8 +620,7 @@ function App() {
                     </span>
 
                     <strong>
-                      {level.questions.length} /{" "}
-                      {level.questions.length} unlocked
+                      {level.questions.length} / 2 unlocked
                     </strong>
                   </div>
                 ))}
@@ -783,10 +636,11 @@ function App() {
           )}
         </main>
 
+        {/* FOOTER */}
         <footer className="footer">
           <p>ELT Speed Reader • Bangladesh Edition</p>
           <span>
-            10 passages. 10 questions. 3 difficulty levels.
+            6 passages. 6 questions. 3 difficulty levels.
           </span>
         </footer>
       </div>
