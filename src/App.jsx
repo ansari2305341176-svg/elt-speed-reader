@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { supabase } from "./services/supabase";
 import "./App.css";
 const READING_TIME = 30;
@@ -113,6 +113,7 @@ function App() {
   const [authLoading, setAuthLoading] = useState(false);
   const [authError, setAuthError] = useState("");
   const [authMode, setAuthMode] = useState("login");
+  const authFlowRef = useRef(false);
   const [form, setForm] = useState({ name: "", studentId: "", email: "", password: "" });
   const [phase, setPhase] = useState("notice");
   const [noticeIndex, setNoticeIndex] = useState(0);
@@ -127,6 +128,8 @@ function App() {
   const [studentResults, setStudentResults] = useState([]);
   const [teacherSearch, setTeacherSearch] = useState("");
   const [selectedResult, setSelectedResult] = useState(null);
+  const [teacherLoading, setTeacherLoading] = useState(false);
+  const [teacherError, setTeacherError] = useState("");
   const [saveMessage, setSaveMessage] = useState("");
 
   const currentLevel = levels[levelIndex];
@@ -143,16 +146,43 @@ function App() {
       if (data.session) loadProfile(data.session);
     });
     const { data: listener } = supabase.auth.onAuthStateChange((_event, newSession) => {
-      if (newSession) loadProfile(newSession);
-      else { setSession(null); setProfile(null); setView("welcome"); }
+      if (newSession) {
+        if (!authFlowRef.current) loadProfile(newSession);
+      } else {
+        setSession(null);
+        setProfile(null);
+        setView("welcome");
+      }
     });
     return () => listener.subscription.unsubscribe();
   }, []);
 
-  async function loadProfile(currentSession) {
+  async function loadProfile(currentSession, expectedRole = null) {
     setSession(currentSession);
     const { data, error } = await supabase.from("profiles").select("id, full_name, student_id, role").eq("id", currentSession.user.id).single();
-    if (error) { setAuthError("Could not load your profile. Contact the teacher."); return; }
+    if (error) {
+      const signOutError = expectedRole ? (await supabase.auth.signOut()).error : null;
+      setSession(null);
+      setProfile(null);
+      setView("welcome");
+      setAuthError(
+        signOutError
+          ? `Could not load your profile: ${error.message}. Sign out failed: ${signOutError.message}`
+          : "Could not load your profile. Check the database setup or contact the administrator."
+      );
+      return;
+    }
+    if (expectedRole && data.role !== expectedRole) {
+      const { error: signOutError } = await supabase.auth.signOut();
+      setSession(null);
+      setProfile(null);
+      setView("welcome");
+      const message = expectedRole === "teacher"
+        ? "This account does not have teacher access. Ask the database administrator to assign the teacher role."
+        : "This is a teacher account. Choose Teacher login.";
+      setAuthError(signOutError ? `${message} Sign out failed: ${signOutError.message}` : message);
+      return;
+    }
     setProfile(data);
     setView(data.role === "teacher" ? "teacher" : "student");
     if (data.role === "teacher") fetchTeacherResults();
@@ -168,22 +198,26 @@ function App() {
   async function handleAuth(event) {
     event.preventDefault(); setAuthError(""); setAuthLoading(true);
     if (!supabase) { setAuthError("Supabase is not configured. Complete the setup instructions first."); setAuthLoading(false); return; }
+    authFlowRef.current = true;
     try {
       if (authMode === "signup") {
         const { data, error } = await supabase.auth.signUp({
           email: form.email.trim(), password: form.password,
-          options: { data: { full_name: form.name.trim(), student_id: form.studentId.trim() } }
+          options: {
+            data: { full_name: form.name.trim(), student_id: form.studentId.trim() },
+            emailRedirectTo: window.location.origin
+          }
         });
         if (error) throw error;
-        if (data.session) await loadProfile(data.session);
+        if (data.session) await loadProfile(data.session, "student");
         else setAuthError("Registration submitted. Check your email to confirm, then sign in.");
       } else {
         const { data, error } = await supabase.auth.signInWithPassword({ email: form.email.trim(), password: form.password });
         if (error) throw error;
-        await loadProfile(data.session);
+        await loadProfile(data.session, authMode === "teacher" ? "teacher" : "student");
       }
     } catch (error) { setAuthError(error.message || "Authentication failed."); }
-    finally { setAuthLoading(false); }
+    finally { authFlowRef.current = false; setAuthLoading(false); }
   }
 
   async function logout() { if (supabase) await supabase.auth.signOut(); setSession(null); setProfile(null); setView("welcome"); resetChallenge(); }
@@ -259,10 +293,28 @@ function App() {
     else setSaveMessage("You have not submitted a result yet.");
   }
   async function fetchTeacherResults() {
-    if (!supabase) return;
-    const { data, error } = await supabase.from("teacher_results").select("*").order("updated_at", { ascending: false });
-    if (error) setAuthError(`Teacher data error: ${error.message}`);
-    else setStudentResults(data || []);
+    if (!supabase) {
+      setTeacherError("Supabase is not configured.");
+      return;
+    }
+
+    setTeacherLoading(true);
+    setTeacherError("");
+    try {
+      const { data, error } = await supabase
+        .from("teacher_results")
+        .select("*")
+        .order("updated_at", { ascending: false });
+      if (error) {
+        setTeacherError(`Could not load class results: ${error.message}`);
+        return;
+      }
+      setStudentResults(data || []);
+    } catch (error) {
+      setTeacherError(error instanceof Error ? error.message : "Could not load class results.");
+    } finally {
+      setTeacherLoading(false);
+    }
   }
   async function markRevisionComplete() {
     if (revisionChoice !== "main") return;
@@ -279,6 +331,11 @@ function App() {
   }
 
   const filteredResults = studentResults.filter((r) => `${r.full_name || ""} ${r.student_code || ""}`.toLowerCase().includes(teacherSearch.toLowerCase()));
+  const submittedResults = studentResults.filter((result) => result.submitted && result.total_score !== null);
+  const averageScore = submittedResults.length
+    ? (submittedResults.reduce((total, result) => total + result.total_score, 0) / submittedResults.length).toFixed(1)
+    : null;
+  const completedRevisions = submittedResults.filter((result) => result.revision_completed).length;
 
   return (
     <div className={`app ${theme === "blue" ? "blue-theme" : ""}`}>
@@ -292,15 +349,19 @@ function App() {
           <span className="step-label">SKIMMING & SCANNING LESSON</span><h2>Welcome to the Reading Skills Challenge</h2>
           <p className="section-description">Learn to read for the main idea (skimming) and locate exact information (scanning). Sign in to save your result and view your personal progress.</p>
           {!supabase && <div className="feedback-box wrong-feedback"><strong>Supabase is not connected</strong><p>Set <code>VITE_SUPABASE_URL</code> and either <code>VITE_SUPABASE_PUBLISHABLE_KEY</code> or <code>VITE_SUPABASE_ANON_KEY</code> in <code>.env</code>, apply <code>supabase/schema.sql</code> in your Supabase SQL Editor, then restart the dev server. For a deployed site, add both variables to its build environment and redeploy.</p></div>}
-          <div className="auth-tabs"><button className={authMode === "login" ? "active-tab" : ""} onClick={() => { setAuthMode("login"); setAuthError(""); }}>Sign in</button><button className={authMode === "signup" ? "active-tab" : ""} onClick={() => { setAuthMode("signup"); setAuthError(""); }}>Student registration</button></div>
+          <div className="auth-tabs">
+            <button className={authMode === "login" ? "active-tab" : ""} onClick={() => { setAuthMode("login"); setAuthError(""); }}>Student sign in</button>
+            <button className={authMode === "signup" ? "active-tab" : ""} onClick={() => { setAuthMode("signup"); setAuthError(""); }}>Student registration</button>
+            <button className={authMode === "teacher" ? "active-tab" : ""} onClick={() => { setAuthMode("teacher"); setAuthError(""); }}>Teacher login</button>
+          </div>
           <form className="auth-form" onSubmit={handleAuth}>
             {authMode === "signup" && <><label>Full name<input required value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="Your full name" /></label><label>Student ID<input required value={form.studentId} onChange={(e) => setForm({ ...form, studentId: e.target.value })} placeholder="e.g. 231-15-000" /></label></>}
             <label>Email address<input required type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} placeholder="name@example.com" /></label>
             <label>Password<input required minLength={6} type="password" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} placeholder="At least 6 characters" /></label>
             {authError && <p className="form-error">{authError}</p>}
-            <button className="primary-button" disabled={authLoading}>{authLoading ? "Please wait..." : authMode === "login" ? "Sign in →" : "Create student account →"}</button>
+            <button className="primary-button" disabled={authLoading}>{authLoading ? "Please wait..." : authMode === "signup" ? "Create student account →" : authMode === "teacher" ? "Teacher sign in →" : "Student sign in →"}</button>
           </form>
-          <p className="small-note">Teacher accounts must be created and assigned the teacher role by the database administrator. Students cannot create teacher accounts.</p>
+          <p className="small-note">Teacher accounts are created and assigned the teacher role by the database administrator. Students cannot create or access teacher accounts.</p>
         </section>}
 
         {view === "student" && profile && <>
@@ -316,7 +377,132 @@ function App() {
         </>}
         {view === "my-results" && <section className="game-card"><span className="step-label">PRIVATE STUDENT RECORD</span><h2>My Results</h2><p className="section-description">Only your own record is available here.</p>{studentResults.length ? studentResults.map((r, i) => <div className="final-score" key={i}><span>LATEST SAVED RESULT</span><strong>{r.total_score} / 6</strong><p>Skimming: {r.skimming_score}/3 · Scanning: {r.scanning_score}/3</p><p>{r.feedback}</p></div>) : <p>{saveMessage || "No saved result found."}</p>}<button className="secondary-button" onClick={() => setView("student")}>Back to dashboard</button></section>}
 
-        {view === "teacher" && profile?.role === "teacher" && <section className="game-card teacher-card"><div className="teacher-heading"><div><span className="step-label">PRIVATE TEACHER DASHBOARD</span><h2>Class Progress</h2><p className="section-description">Registered students and submitted results. This data is protected by database row-level security.</p></div><button className="secondary-button" onClick={fetchTeacherResults}>↻ Refresh</button></div><div className="teacher-toolbar"><input value={teacherSearch} onChange={(e) => setTeacherSearch(e.target.value)} placeholder="Search student name or ID" /><button className="secondary-button" onClick={exportCSV}>Export CSV ↓</button></div><div className="teacher-summary"><div className="stat-box"><span>Registered / submitted</span><strong>{studentResults.length}</strong></div><div className="stat-box"><span>Average score</span><strong>{studentResults.length ? (studentResults.reduce((n, r) => n + (r.total_score || 0), 0) / studentResults.length).toFixed(1) : "0.0"}/6</strong></div><div className="stat-box"><span>Revision complete</span><strong>{studentResults.filter((r) => r.revision_completed).length}</strong></div></div><div className="table-wrap"><table className="teacher-table"><thead><tr><th>Student</th><th>ID</th><th>Score</th><th>Skim</th><th>Scan</th><th>Status</th><th>Revision</th><th>Details</th></tr></thead><tbody>{filteredResults.map((r) => <tr key={r.student_uuid}><td>{r.full_name}</td><td>{r.student_code}</td><td>{r.total_score == null ? "—" : `${r.total_score}/6`}</td><td>{r.skimming_score == null ? "—" : `${r.skimming_score}/3`}</td><td>{r.scanning_score == null ? "—" : `${r.scanning_score}/3`}</td><td>{r.submitted ? "Submitted" : "Not submitted"}</td><td>{r.revision_completed ? "Complete" : "Incomplete"}</td><td><button className="text-button" onClick={() => setSelectedResult(r)}>View</button></td></tr>)}</tbody></table>{filteredResults.length === 0 && <p className="small-note">No submitted results match your search. Students who have not submitted are not included in this result table.</p>}</div>{selectedResult && <div className="teacher-detail"><div className="teacher-heading"><h3>{selectedResult.full_name} · {selectedResult.student_code}</h3><button className="text-button" onClick={() => setSelectedResult(null)}>Close ×</button></div><p><b>Status:</b> {selectedResult.submitted ? "Submitted" : "Not submitted"}</p><p><b>Score:</b> {selectedResult.total_score == null ? "—" : `${selectedResult.total_score}/6`} · <b>Skimming:</b> {selectedResult.skimming_score == null ? "—" : `${selectedResult.skimming_score}/3`} · <b>Scanning:</b> {selectedResult.scanning_score == null ? "—" : `${selectedResult.scanning_score}/3`}</p><p><b>Automated feedback:</b> {selectedResult.feedback || "No feedback yet because no result has been submitted."}</p><p><b>Revision:</b> {selectedResult.revision_completed ? "Completed" : "Incomplete"}</p>{(selectedResult.answers || []).map((a, i) => <div className="answer-review-row" key={i}><span><b>Q{i + 1} · {a.skill}</b><small>{a.question}</small></span><strong className={a.correct ? "answer-correct" : "answer-wrong"}>{a.correct ? "Correct" : `Incorrect · Selected ${a.selected === null ? "—" : String.fromCharCode(65 + a.selected)}`}</strong></div>)}</div>}<button className="secondary-button" onClick={logout}>Log out</button></section>}
+        {view === "teacher" && profile?.role === "teacher" && (
+          <section className="game-card teacher-card">
+            <div className="teacher-heading">
+              <div>
+                <span className="step-label">PRIVATE TEACHER DASHBOARD</span>
+                <h2>Class Progress</h2>
+                <p className="section-description">
+                  Welcome, {profile.full_name}. Review student activity and assessment results.
+                </p>
+              </div>
+              <button className="secondary-button" onClick={fetchTeacherResults} disabled={teacherLoading}>
+                {teacherLoading ? "Refreshing..." : "↻ Refresh"}
+              </button>
+            </div>
+
+            {teacherError && <p className="form-error" role="alert">{teacherError}</p>}
+
+            <div className="teacher-toolbar">
+              <input
+                aria-label="Search students by name or ID"
+                value={teacherSearch}
+                onChange={(event) => setTeacherSearch(event.target.value)}
+                placeholder="Search student name or ID"
+              />
+              <button
+                className="secondary-button"
+                onClick={exportCSV}
+                disabled={teacherLoading || studentResults.length === 0}
+              >
+                Export CSV ↓
+              </button>
+            </div>
+
+            <div className="teacher-summary">
+              <div className="stat-box">
+                <span>Registered students</span>
+                <strong>{studentResults.length}</strong>
+              </div>
+              <div className="stat-box">
+                <span>Submitted assessments</span>
+                <strong>{submittedResults.length}</strong>
+              </div>
+              <div className="stat-box">
+                <span>Average submitted score</span>
+                <strong>{averageScore ?? "—"}/6</strong>
+              </div>
+              <div className="stat-box">
+                <span>Revisions completed</span>
+                <strong>{completedRevisions}/{submittedResults.length}</strong>
+              </div>
+            </div>
+
+            {teacherLoading ? (
+              <p className="small-note" role="status">Loading class progress...</p>
+            ) : filteredResults.length > 0 ? (
+              <div className="table-wrap">
+                <table className="teacher-table">
+                  <thead>
+                    <tr>
+                      <th>Student</th>
+                      <th>ID</th>
+                      <th>Score</th>
+                      <th>Skim</th>
+                      <th>Scan</th>
+                      <th>Status</th>
+                      <th>Revision</th>
+                      <th>Details</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {filteredResults.map((result) => (
+                      <tr key={result.student_uuid}>
+                        <td>{result.full_name}</td>
+                        <td>{result.student_code || "—"}</td>
+                        <td>{result.total_score == null ? "—" : `${result.total_score}/6`}</td>
+                        <td>{result.skimming_score == null ? "—" : `${result.skimming_score}/3`}</td>
+                        <td>{result.scanning_score == null ? "—" : `${result.scanning_score}/3`}</td>
+                        <td>{result.submitted ? "Submitted" : "Not submitted"}</td>
+                        <td>{result.revision_completed ? "Complete" : "Incomplete"}</td>
+                        <td>
+                          <button className="text-button" onClick={() => setSelectedResult(result)}>
+                            View
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            ) : (
+              <p className="small-note">
+                {studentResults.length === 0
+                  ? "No student accounts have been registered yet."
+                  : "No students match your search."}
+              </p>
+            )}
+
+            {selectedResult && (
+              <div className="teacher-detail">
+                <div className="teacher-heading">
+                  <h3>{selectedResult.full_name} · {selectedResult.student_code || "No student ID"}</h3>
+                  <button className="text-button" onClick={() => setSelectedResult(null)}>Close ×</button>
+                </div>
+                <p><b>Status:</b> {selectedResult.submitted ? "Submitted" : "Not submitted"}</p>
+                <p>
+                  <b>Score:</b> {selectedResult.total_score == null ? "—" : `${selectedResult.total_score}/6`}
+                  {" · "}<b>Skimming:</b> {selectedResult.skimming_score == null ? "—" : `${selectedResult.skimming_score}/3`}
+                  {" · "}<b>Scanning:</b> {selectedResult.scanning_score == null ? "—" : `${selectedResult.scanning_score}/3`}
+                </p>
+                <p><b>Automated feedback:</b> {selectedResult.feedback || "No feedback yet because no result has been submitted."}</p>
+                <p><b>Revision:</b> {selectedResult.revision_completed ? "Completed" : "Incomplete"}</p>
+                {(selectedResult.answers || []).map((answer, index) => (
+                  <div className="answer-review-row" key={index}>
+                    <span><b>Q{index + 1} · {answer.skill}</b><small>{answer.question}</small></span>
+                    <strong className={answer.correct ? "answer-correct" : "answer-wrong"}>
+                      {answer.correct
+                        ? "Correct"
+                        : `Incorrect · Selected ${answer.selected === null ? "—" : String.fromCharCode(65 + answer.selected)}`}
+                    </strong>
+                  </div>
+                ))}
+              </div>
+            )}
+            <button className="secondary-button" onClick={logout}>Log out</button>
+          </section>
+        )}
 
         <footer className="footer"><p>ELT Speed Reader • Bangladesh Edition</p><span>Skimming for the main idea. Scanning for specific information.</span></footer>
       </div>

@@ -764,7 +764,7 @@ button {
 
 /* Added for the Skimming & Scanning lesson, student account and teacher dashboard */
 .auth-card { max-width: 720px; margin: 0 auto; }
-.auth-tabs { display: flex; gap: 10px; margin: 22px 0 18px; border-bottom: 1px solid var(--border); }
+.auth-tabs { display: flex; flex-wrap: wrap; gap: 10px; margin: 22px 0 18px; border-bottom: 1px solid var(--border); }
 .auth-tabs button { border: 0; background: transparent; color: var(--muted); padding: 12px 16px; cursor: pointer; font-weight: 700; border-bottom: 3px solid transparent; }
 .auth-tabs button.active-tab { color: var(--primary); border-bottom-color: var(--primary); }
 .auth-form { display: grid; gap: 14px; }
@@ -792,7 +792,7 @@ button {
 .teacher-heading h2 { margin-top: 6px; }
 .teacher-toolbar { display: flex; gap: 10px; margin: 20px 0; }
 .teacher-toolbar input { flex: 1; min-width: 150px; }
-.teacher-summary { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin: 18px 0; }
+.teacher-summary { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin: 18px 0; }
 .table-wrap { width: 100%; overflow-x: auto; margin: 18px 0; }
 .teacher-table { width: 100%; border-collapse: collapse; min-width: 650px; font-size: 12px; text-align: left; }
 .teacher-table th, .teacher-table td { padding: 12px 10px; border-bottom: 1px solid var(--border); }
@@ -801,6 +801,9 @@ button {
 .text-button { color: var(--primary); background: none; border: 0; cursor: pointer; font-weight: 800; }
 .teacher-detail { border: 1px solid var(--border); border-radius: 12px; padding: 16px; margin: 18px 0; background: var(--soft-bg); }
 .teacher-detail > p { margin: 12px 0; font-size: 13px; line-height: 1.5; }
+@media (max-width: 900px) {
+  .teacher-summary { grid-template-columns: repeat(2, 1fr); }
+}
 @media (max-width: 620px) {
   .teacher-toolbar { flex-direction: column; }
   .teacher-summary { grid-template-columns: 1fr; }
