@@ -607,7 +607,7 @@ button {
 
 .result-stats {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(5, 1fr);
   gap: 10px;
   margin-bottom: 25px;
 }
@@ -760,54 +760,251 @@ button {
   .overall-progress-label {
     font-size: 10px;
   }
+
+  .result-stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 
-/* Added for the Skimming & Scanning lesson, student account and teacher dashboard */
-.auth-card { max-width: 720px; margin: 0 auto; }
-.auth-tabs { display: flex; flex-wrap: wrap; gap: 10px; margin: 22px 0 18px; border-bottom: 1px solid var(--border); }
-.auth-tabs button { border: 0; background: transparent; color: var(--muted); padding: 12px 16px; cursor: pointer; font-weight: 700; border-bottom: 3px solid transparent; }
-.auth-tabs button.active-tab { color: var(--primary); border-bottom-color: var(--primary); }
-.auth-form { display: grid; gap: 14px; }
-.auth-form label { display: grid; gap: 7px; color: var(--text); font-size: 13px; font-weight: 700; }
-.auth-form input, .teacher-toolbar input { width: 100%; padding: 12px 14px; border: 1px solid var(--border); border-radius: 10px; background: var(--soft-bg); color: var(--text); outline: none; }
-.auth-form input:focus, .teacher-toolbar input:focus { border-color: var(--primary); }
-.form-error { color: #d44747; font-size: 13px; margin: 8px 0; }
+.welcome-panel {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1.15fr 0.85fr;
+  align-items: center;
+  gap: 28px;
+  min-height: 430px;
+  max-width: 1000px;
+  margin: 30px auto;
+  padding: 52px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: 28px;
+  background:
+    radial-gradient(circle at 85% 20%, rgba(116, 128, 255, 0.2), transparent 34%),
+    linear-gradient(135deg, var(--card-bg), var(--passage-bg));
+  box-shadow: var(--shadow);
+  animation: welcome-in 0.55s ease-out both;
+}
+
+.welcome-copy {
+  position: relative;
+  z-index: 1;
+}
+
+.welcome-copy h2 {
+  margin: 14px 0;
+  font-size: clamp(36px, 5vw, 56px);
+  line-height: 1.06;
+  letter-spacing: -2px;
+}
+
+.welcome-copy h2 span {
+  color: var(--primary);
+}
+
+.welcome-copy > p {
+  max-width: 480px;
+  color: var(--muted);
+  font-size: 15px;
+  line-height: 1.8;
+}
+
+.welcome-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 24px;
+}
+
+.welcome-stats div {
+  display: grid;
+  gap: 3px;
+  min-width: 94px;
+  padding: 12px 15px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: var(--card-bg);
+}
+
+.welcome-stats strong {
+  color: var(--primary);
+  font-size: 20px;
+}
+
+.welcome-stats span,
+.welcome-copy small {
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.welcome-button {
+  max-width: 330px;
+  margin: 24px 0 12px;
+}
+
+.welcome-button span {
+  margin-left: 7px;
+  font-size: 18px;
+}
+
+.welcome-art {
+  position: relative;
+  display: grid;
+  place-items: center;
+  min-height: 300px;
+}
+
+.welcome-book {
+  z-index: 1;
+  display: grid;
+  width: 172px;
+  height: 172px;
+  place-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.65);
+  border-radius: 42px;
+  background: linear-gradient(145deg, #7a7ff2, #5264da);
+  box-shadow: 0 24px 55px rgba(67, 83, 188, 0.28);
+  font-size: 76px;
+  transform: rotate(-7deg);
+  animation: book-float 4s ease-in-out infinite;
+}
+
+.welcome-orbit {
+  position: absolute;
+  border: 1px solid rgba(91, 97, 232, 0.25);
+  border-radius: 50%;
+}
+
+.orbit-one {
+  width: 270px;
+  height: 270px;
+}
+
+.orbit-two {
+  width: 330px;
+  height: 180px;
+  transform: rotate(-35deg);
+}
+
+.art-chip {
+  position: absolute;
+  z-index: 2;
+  padding: 9px 13px;
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  background: var(--card-bg);
+  box-shadow: var(--shadow);
+  color: var(--primary);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 1px;
+}
+
+.skim-chip {
+  top: 35px;
+  left: 12%;
+  transform: rotate(-8deg);
+}
+
+.scan-chip {
+  right: 7%;
+  bottom: 35px;
+  transform: rotate(7deg);
+}
+
+.coaching-panel {
+  margin: 24px 0;
+  text-align: left;
+}
+
+.coaching-panel > h3 {
+  margin-bottom: 14px;
+  font-size: 18px;
+}
+
+.coaching-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.coaching-tip {
+  display: flex;
+  align-items: flex-start;
+  gap: 11px;
+  padding: 16px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: var(--soft-bg);
+  animation: welcome-in 0.4s ease-out both;
+}
+
+.coaching-spark {
+  color: var(--primary);
+  font-size: 20px;
+}
+
+.coaching-tip h4 {
+  margin-bottom: 5px;
+  font-size: 13px;
+}
+
+.coaching-tip p {
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+@keyframes welcome-in {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes book-float {
+  0%, 100% { transform: translateY(0) rotate(-7deg); }
+  50% { transform: translateY(-10px) rotate(-4deg); }
+}
+
+.app.blue-theme .welcome-panel {
+  background:
+    radial-gradient(circle at 85% 20%, rgba(113, 170, 255, 0.2), transparent 34%),
+    linear-gradient(135deg, var(--card-bg), var(--passage-bg));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .welcome-panel,
+  .welcome-book,
+  .coaching-tip {
+    animation: none;
+  }
+}
+
 .small-note { color: var(--muted); font-size: 12px; line-height: 1.6; margin-top: 14px; }
 .success-text { color: #16834a; font-weight: 700; font-size: 13px; margin-top: 10px; }
 .secondary-button { border: 1px solid var(--border); background: var(--soft-bg); color: var(--text); border-radius: 10px; padding: 11px 15px; font-weight: 700; cursor: pointer; margin: 8px 8px 0 0; }
 .secondary-button:hover { border-color: var(--primary); }
 .secondary-button:disabled { opacity: .55; cursor: not-allowed; }
+.warmup-card,
+.quiz-card {
+  animation: welcome-in 0.35s ease-out both;
+}
 .revision-box { background: var(--soft-bg); border: 1px solid var(--border); padding: 18px; border-radius: 13px; margin: 20px 0; text-align: left; }
 .revision-box h3 { margin-bottom: 9px; }
 .revision-box p { color: var(--muted); line-height: 1.6; margin-bottom: 12px; }
 .revision-option { display: flex; align-items: flex-start; gap: 9px; margin: 12px 0; font-size: 13px; line-height: 1.5; cursor: pointer; }
 .revision-option input { margin-top: 3px; accent-color: var(--primary); }
 .answer-review-row { display: flex; justify-content: space-between; align-items: flex-start; gap: 14px; padding: 12px 0; border-bottom: 1px solid var(--border); text-align: left; }
-.answer-review-row span { display: grid; gap: 5px; }
+.answer-review-row span { display: grid; gap: 5px; min-width: 0; }
 .answer-review-row small { color: var(--muted); line-height: 1.4; }
 .answer-review-row strong { white-space: nowrap; font-size: 12px; }
 .answer-correct { color: #16834a; }
 .answer-wrong { color: #d44747; }
-.teacher-heading { display: flex; align-items: center; justify-content: space-between; gap: 15px; }
-.teacher-heading h2 { margin-top: 6px; }
-.teacher-toolbar { display: flex; gap: 10px; margin: 20px 0; }
-.teacher-toolbar input { flex: 1; min-width: 150px; }
-.teacher-summary { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin: 18px 0; }
-.table-wrap { width: 100%; overflow-x: auto; margin: 18px 0; }
-.teacher-table { width: 100%; border-collapse: collapse; min-width: 650px; font-size: 12px; text-align: left; }
-.teacher-table th, .teacher-table td { padding: 12px 10px; border-bottom: 1px solid var(--border); }
-.teacher-table th { color: var(--muted); background: var(--soft-bg); }
-.teacher-table td { color: var(--text); }
-.text-button { color: var(--primary); background: none; border: 0; cursor: pointer; font-weight: 800; }
-.teacher-detail { border: 1px solid var(--border); border-radius: 12px; padding: 16px; margin: 18px 0; background: var(--soft-bg); }
-.teacher-detail > p { margin: 12px 0; font-size: 13px; line-height: 1.5; }
-@media (max-width: 900px) {
-  .teacher-summary { grid-template-columns: repeat(2, 1fr); }
-}
 @media (max-width: 620px) {
-  .teacher-toolbar { flex-direction: column; }
-  .teacher-summary { grid-template-columns: 1fr; }
+  .welcome-panel { grid-template-columns: 1fr; padding: 32px 22px; }
+  .welcome-art { min-height: 220px; }
+  .welcome-book { width: 132px; height: 132px; border-radius: 32px; font-size: 58px; }
+  .orbit-one { width: 210px; height: 210px; }
+  .orbit-two { width: 250px; height: 140px; }
+  .coaching-grid { grid-template-columns: 1fr; }
   .answer-review-row { flex-direction: column; }
-  .teacher-heading { align-items: flex-start; }
-  .auth-tabs button { padding: 10px 8px; font-size: 12px; }
 }
